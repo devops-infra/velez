@@ -31,7 +31,11 @@ class Velez:
 
     def run(self, terragrunt=False, **kwargs):
         if terragrunt and kwargs.get('pos_args'):
-            self.terragrunt_ops.execute_terragrunt(module=self.base_dir, arguments=kwargs.get('pos_args'))
+            pos_args = kwargs.get('pos_args')
+            option = pos_args[0]
+            module = pos_args[1]
+            additional_args = pos_args[2:]
+            self.terragrunt_ops.execute_terragrunt(module=module, arguments=[option] + additional_args)
         elif terragrunt:
             self.terragrunt_ops.folder_menu()
         else:
