@@ -1,0 +1,107 @@
+name: Push to other branches
+
+on:
+  push:
+    branches-ignore:
+      - master
+
+jobs:
+  labels:
+    name: Repo labels
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Labels' config
+        shell: bash
+        run: |
+          mkdir -p .tmp
+          curl -LsS https://raw.githubusercontent.com/devops-infra/.github/master/.github/labels.yml -o .tmp/labels.yml
+
+      - name: Update labels
+        uses: crazy-max/ghaction-github-labeler@v5.2.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          yaml-file: .tmp/labels.yml
+
+  pull_request:
+    name: Pull Request
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - name: Get current date
+        id: date
+        run: echo "curr_date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Template
+        shell: bash
+        run: |
+          mkdir -p .tmp
+          curl -LsS https://raw.githubusercontent.com/devops-infra/.github/master/PULL_REQUEST_TEMPLATE.md -o .tmp/PULL_REQUEST_TEMPLATE.md
+
+      - name: PR - bugfix (conditional)
+        if: startsWith(github.ref, 'refs/heads/bug')
+        uses: devops-infra/action-pull-request@v0.6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          assignee: ${{ github.actor }}
+          label: bugfix
+          template: .tmp/PULL_REQUEST_TEMPLATE.md
+          get_diff: true
+
+      - name: PR - dependency (conditional)
+        if: startsWith(github.ref, 'refs/heads/dep') && !startsWith(github.ref, 'refs/heads/dependabot')
+        uses: devops-infra/action-pull-request@v0.6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          assignee: ${{ github.actor }}
+          label: dependency
+          template: .tmp/PULL_REQUEST_TEMPLATE.md
+          get_diff: true
+
+      - name: PR - documentation (conditional)
+        if: startsWith(github.ref, 'refs/heads/doc')
+        uses: devops-infra/action-pull-request@v0.6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          assignee: ${{ github.actor }}
+          label: documentation
+          template: .tmp/PULL_REQUEST_TEMPLATE.md
+          get_diff: true
+
+      - name: PR - feature (conditional)
+        if: startsWith(github.ref, 'refs/heads/feat')
+        uses: devops-infra/action-pull-request@v0.6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          assignee: ${{ github.actor }}
+          label: feature
+          template: .tmp/PULL_REQUEST_TEMPLATE.md
+          get_diff: true
+
+      - name: PR - test (conditional)
+        if: startsWith(github.ref, 'refs/heads/test')
+        uses: devops-infra/action-pull-request@v0.6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          assignee: ${{ github.actor }}
+          reviewer: ${{ github.actor }}
+          label: test
+          template: .tmp/PULL_REQUEST_TEMPLATE.md
+          draft: true
+          get_diff: true
+
+      - name: PR - test (conditional)
+        if: "!startsWith(github.ref, 'refs/heads/bug') && !startsWith(github.ref, 'refs/heads/dep') && !startsWith(github.ref, 'refs/heads/doc')  && !startsWith(github.ref, 'refs/heads/feat') && !startsWith(github.ref, 'refs/heads/test')"
+        uses: devops-infra/action-pull-request@v0.6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          assignee: ${{ github.actor }}
+          label: feature
+          template: .tmp/PULL_REQUEST_TEMPLATE.md
+          get_diff: true

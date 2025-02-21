@@ -1,2 +1,2 @@
-pick
-setuptools
+pick==2.4.0
+setuptools==75.8.0
