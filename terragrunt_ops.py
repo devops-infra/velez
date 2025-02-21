@@ -346,8 +346,7 @@ class TerragruntOperations:
     def execute_terragrunt(self, module, arguments):
         args = [i for i in arguments if i is not None or i != '']
         module = os.path.relpath(module, self.velez.base_dir)
-        # TODO: echo to debug
-        command = ['echo', 'terragrunt', '--terragrunt-forward-tf-stdout'] + args + ['--terragrunt-working-dir', f'{module}']
+        command = ['terragrunt', '--terragrunt-forward-tf-stdout'] + args + ['--terragrunt-working-dir', f'{module}']
         print(f"Running command: {command}")
         try:
             result = subprocess.run(
@@ -361,4 +360,4 @@ class TerragruntOperations:
                 print(result.stderr)
         except Exception as e:
             print(f"An error occurred: {e}")
-        input("Press Enter to return to the previous menu...")
+        input("Press Enter when ready to continue...")

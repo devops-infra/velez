@@ -1,6 +1,6 @@
 # Velez
 
-Python framework for interacting with a Terragrunt configurations and performing various cloud operations.
+Python framework for interacting with Terragrunt configurations and performing various cloud operations.
 
 ![Velez](velez.jpg)
 
@@ -29,7 +29,16 @@ Python framework for interacting with a Terragrunt configurations and performing
 
 ## Usage
 
+### Help
+
+Run the CLI with the `--help` argument to see the available commands:
+
+```sh
+velez --help
+```
+
 To use the Velez CLI, you have two options:
+
 
 ### Interactive Menu
 
@@ -39,15 +48,38 @@ Run the CLI without additional arguments to use the interactive menu:
 velez
 ```
 
+
 ### Automation
 
-Run the CLI with additional arguments for automation:
+Run the CLI with additional arguments for automation/scripting:
 
 ```sh
-velez --terragrunt <operation> <module>
+velez --terragrunt <operation> <module> <other-arguments>
 ```
 
-Replace `<operation>` with `plan`, `apply`, or `destroy`, `<module>` with the path to the specific module directory.
+Where:
+* `<operation>` is a Terraform/Terragrunt operation to perform, e.g. `plan`. 
+* `<module>` is a relative path to a Terragrunt module to operate on, e.g. `aws/dev-account`. 
+* `<other-arguments>` are additional arguments for the operation, e.g. `--target=module.resource`.
+
+For example for the following directory structure:
+
+```plaintext
+. 
+├── aws
+│   ├── dev-account
+│   │   └── terragrunt.hcl
+│   ├── prod-account
+│   │   └── terragrunt.hcl
+│   └── aws.hcl
+└── root.hcl
+```
+
+Run the following command to plan the `aws/dev-account` module:
+
+```sh
+velez --terragrunt plan aws/dev-account
+``` 
 
 
 ## Features
