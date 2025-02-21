@@ -1,16 +1,15 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='cloudopser',
+    name='velez',
     version='0.1.0',
-    py_modules=['cloudopser'],
-    packages=find_packages(),
+    py_modules=['velez', 'terragrunt_ops'],
     install_requires=[
         'pick',
     ],
     entry_points={
         'console_scripts': [
-            'cloudopser=cloudopser:main',
+            'velez=velez:main',
         ],
     },
 )
