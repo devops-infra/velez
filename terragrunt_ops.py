@@ -1,32 +1,7 @@
 import os
 import subprocess
-
 import boto3
-
 from pick import pick
-
-menu_plan = "📋 Plan"
-menu_apply = "✅ Apply"
-menu_import = "📎 Import"
-menu_destroy = "💣 Destroy"
-menu_state = "📦 State operations"
-menu_module = "📦 Module operations"
-menu_taint = "🚫 Taint"
-menu_untaint = "♻️ Untaint"
-menu_unlock = "🔓 Unlock"
-menu_output = "📤 Output"
-menu_init = "🚀 Initialize"
-menu_validate = "☑️ Validate"
-menu_refresh = "🔄 Refresh"
-state_list = "📄 List"
-state_move = "📦 Move"
-state_rm = "🗑️ Remove"
-state_show = "🔍 Show"
-state_pull = "⤵️ Pull"
-state_push = "⤴ Push"
-module_move = "↔️ Move module"
-module_destroy_backend = "⌫ Destroy backend"
-module_destroy = "🗑️ Destroy module"
 
 
 def list_folders_to_ignore():
@@ -34,6 +9,30 @@ def list_folders_to_ignore():
 
 
 class TerragruntOperations:
+    menu_plan = "📋 Plan"
+    menu_apply = "✅ Apply"
+    menu_import = "📎 Import"
+    menu_destroy = "💣 Destroy"
+    menu_state = "📦 State operations"
+    menu_module = "📦 Module operations"
+    menu_taint = "🚫 Taint"
+    menu_untaint = "♻️ Untaint"
+    menu_unlock = "🔓 Unlock"
+    menu_output = "📤 Output"
+    menu_init = "🚀 Initialize"
+    menu_validate = "☑️ Validate"
+    menu_refresh = "🔄 Refresh"
+    state_list = "📄 List"
+    state_move = "📦 Move"
+    state_rm = "🗑️ Remove"
+    state_show = "🔍 Show"
+    state_pull = "⤵️ Pull"
+    state_push = "⤴ Push"
+    module_move = "↔️ Move module"
+    module_destroy_backend = "⌫ Destroy backend"
+    module_destroy = "🗑️ Destroy module"
+
+
     def __init__(self, velez):
         self.velez = velez
 
@@ -95,19 +94,20 @@ class TerragruntOperations:
 
     def action_menu(self, module):
         options = [
-                      menu_plan,
-                      menu_apply,
-                      menu_import,
-                      menu_destroy,
-                      menu_state,
-                      menu_taint,
-                      menu_untaint,
-                      menu_unlock,
-                      menu_output,
-                      menu_init,
-                      menu_validate,
-                      menu_refresh
-                  ] + [self.velez.menu_back, self.velez.menu_exit]
+            self.menu_plan,
+            self.menu_apply,
+            self.menu_import,
+            self.menu_destroy,
+            self.menu_state,
+            self.menu_module if self.velez.use_s3_backend and self.velez.use_dynamodb_locks else None,
+            self.menu_taint,
+            self.menu_untaint,
+            self.menu_unlock,
+            self.menu_output,
+            self.menu_init,
+            self.menu_validate,
+            self.menu_refresh
+        ] + [self.velez.menu_back, self.velez.menu_exit]
         title = f"Choose an action. Current Module: {os.path.relpath(module, self.velez.base_dir)}:"
         option, index = pick(options, title)
 
@@ -117,7 +117,7 @@ class TerragruntOperations:
             exit()
 
         # Plan
-        elif option == menu_plan:
+        elif option == self.menu_plan:
             resource = input("Enter the target to plan (e.g., module.resource; will run the whole module if empty): ")
             if resource:
                 self.execute_terragrunt(module, ['plan', '-target', resource])
@@ -127,7 +127,7 @@ class TerragruntOperations:
                 self.action_menu(module)
 
         # Apply
-        elif option == menu_apply:
+        elif option == self.menu_apply:
             resource = input("Enter the target to apply (e.g., module.resource; will run the whole module if empty): ")
             if resource:
                 self.execute_terragrunt(module, ['apply', '-target', resource])
@@ -137,7 +137,7 @@ class TerragruntOperations:
                 self.action_menu(module)
 
         # Import
-        elif option == menu_import:
+        elif option == self.menu_import:
             resource = input("Enter the address of the resource to import (e.g., aws_instance.example): ")
             resource_id = input("Enter the resource ID to import (e.g., i-12345678): ")
             if resource and resource_id:
@@ -145,7 +145,7 @@ class TerragruntOperations:
                 self.action_menu(module)
 
         # Destroy
-        elif option == menu_destroy:
+        elif option == self.menu_destroy:
             resource = input(
                 "Enter the target to destroy (e.g., module.resource; will run the whole module if empty): ")
             if resource:
@@ -156,14 +156,14 @@ class TerragruntOperations:
                 self.action_menu(module)
 
         # State operations
-        elif option == menu_state:
+        elif option == self.menu_state:
             state_options = [
-                state_list,
-                state_move,
-                state_rm,
-                state_show,
-                state_pull,
-                state_push,
+                self.state_list,
+                self.state_move,
+                self.state_rm,
+                self.state_show,
+                self.state_pull,
+                self.state_push,
                 self.velez.menu_back,
                 self.velez.menu_exit
             ]
@@ -173,37 +173,37 @@ class TerragruntOperations:
                 self.action_menu(module)
             elif state_option == self.velez.menu_exit:
                 exit()
-            elif state_option == state_list:
+            elif state_option == self.state_list:
                 resource = input("Enter the address of the resource to list (e.g., module.example): ")
                 self.execute_terragrunt(module, ['state', 'list', resource])
                 self.action_menu(module)
-            elif state_option == state_move:
+            elif state_option == self.state_move:
                 source = input("Enter the source address of the resource to move (e.g., aws_instance.example): ")
                 destination = input(
                     "Enter the destination address of the resource to move (e.g., aws_instance.example): ")
                 self.execute_terragrunt(module, ['state', 'mv', source, destination])
                 self.action_menu(module)
-            elif state_option == state_rm:
+            elif state_option == self.state_rm:
                 resource = input("Enter the address of the resource to remove (e.g., aws_instance.example): ")
                 self.execute_terragrunt(module, ['state', 'rm', resource])
                 self.action_menu(module)
-            elif state_option == state_show:
+            elif state_option == self.state_show:
                 resource = input("Enter the address of the resource to show (e.g., aws_instance.example): ")
                 self.execute_terragrunt(module, ['state', 'show', resource])
                 self.action_menu(module)
-            elif state_option == state_pull:
+            elif state_option == self.state_pull:
                 self.execute_terragrunt(module, ['state', 'pull'])
                 self.action_menu(module)
-            elif state_option == state_push:
+            elif state_option == self.state_push:
                 self.execute_terragrunt(module, ['state', 'push'])
                 self.action_menu(module)
 
         # Module operations
-        elif option == menu_module:
+        elif option == self.menu_module:
             module_options = [
-                module_move,
-                module_destroy,
-                module_destroy_backend,
+                self.module_move if self.velez.use_s3_backend and self.velez.use_dynamodb_locks else None,
+                self.module_destroy if self.velez.use_s3_backend and self.velez.use_dynamodb_locks else None,
+                self.module_destroy_backend if self.velez.use_s3_backend and self.velez.use_dynamodb_locks else None,
                 self.velez.menu_back,
                 self.velez.menu_exit
             ]
@@ -215,7 +215,7 @@ class TerragruntOperations:
                 exit()
 
             # Move module
-            elif module_option == module_move:
+            elif module_option == self.module_move:
                 destination = input("Enter the destination path (e.g., aws/prod): ")
                 dynamodb_name = input("Enter the DynamoDB lock table name (e.g., my_table): ")
                 dynamodb_lockid = input("Enter the DynamoDB LockID (e.g., my-terragrunt/aws/dev/account/terraform.tfstate-md5): ")
@@ -255,7 +255,7 @@ class TerragruntOperations:
                 self.action_menu(destination)
 
             # Destroy whole module
-            elif module_option == module_destroy:
+            elif module_option == self.module_destroy:
                 dynamodb_name = input("Enter the DynamoDB lock table name (e.g., my_table): ")
                 dynamodb_lockid = input("Enter the DynamoDB LockID (e.g., my-terragrunt/aws/dev/account/terraform.tfstate-md5): ")
                 s3_state = input("Enter the S3 state path (e.g., s3://my-terragrunt/aws/dev/account): ")
@@ -283,7 +283,7 @@ class TerragruntOperations:
                 self.action_menu(os.path.dirname(module))
 
             # Destroy backend for the module
-            elif module_option == module_destroy_backend:
+            elif module_option == self.module_destroy_backend:
                 dynamodb_name = input("Enter the DynamoDB lock table name (e.g., my_table): ")
                 dynamodb_lockid = input("Enter the DynamoDB LockID (e.g., my-terragrunt/aws/dev/account/terraform.tfstate-md5): ")
                 s3_state = input("Enter the S3 state path (e.g., s3://my-terragrunt/aws/dev/account): ")
@@ -306,40 +306,40 @@ class TerragruntOperations:
                 self.action_menu(module)
 
         # Taint
-        elif option == menu_taint:
+        elif option == self.menu_taint:
             address = input("Enter the address of the resource to taint (e.g., aws_instance.example): ")
             self.execute_terragrunt(module, ['taint', address])
             self.action_menu(module)
 
         # Untaint
-        elif option == menu_untaint:
+        elif option == self.menu_untaint:
             address = input("Enter the address of the resource to untaint (e.g., aws_instance.example): ")
             self.execute_terragrunt(module, ['untaint', address])
             self.action_menu(module)
 
         # Unlock
-        elif option == menu_unlock:
+        elif option == self.menu_unlock:
             self.execute_terragrunt(module, ['force-unlock'])
             self.action_menu(module)
 
         # Output
-        elif option == menu_output:
+        elif option == self.menu_output:
             variable = input("Enter the output variable to show (e.g., my_output; will show all if empty): ")
             self.execute_terragrunt(module, ['output', variable])
             self.action_menu(module)
 
         # Initialize
-        elif option == menu_init:
+        elif option == self.menu_init:
             self.execute_terragrunt(module, ['init'])
             self.action_menu(module)
 
         # Validate
-        elif option == menu_validate:
+        elif option == self.menu_validate:
             self.execute_terragrunt(module, ['validate'])
             self.action_menu(module)
 
         # Refresh
-        elif option == menu_refresh:
+        elif option == self.menu_refresh:
             self.execute_terragrunt(module, ['refresh'])
             self.action_menu(module)
 

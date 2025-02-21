@@ -72,6 +72,7 @@ For example for the following directory structure:
 │   ├── prod-account
 │   │   └── terragrunt.hcl
 │   └── aws.hcl
+├── .env
 └── root.hcl
 ```
 
@@ -80,6 +81,15 @@ Run the following command to plan the `aws/dev-account` module:
 ```sh
 velez --terragrunt plan aws/dev-account
 ``` 
+
+
+## Configuration
+
+Velez expects following environment variables to be set:
+* `VELEZ_USE_S3_BACKEND` - set to `true` if you use AWS S3 backend for storing Terraform state. Acts as set to `true` by default.
+* `VELEZ_USE_DYNAMODB_LOCKS` - set to `true` if you use AWS DynamoDB for locking Terraform state. Acts as set to `true` by default.
+
+For your convenience, you can set these variables in a `.env` file in the project directory and use the `dotenv` to load them.
 
 
 ## Features
