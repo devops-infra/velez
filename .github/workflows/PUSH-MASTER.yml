@@ -1,0 +1,26 @@
+name: Push to master
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  labels:
+    name: Repo labels
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Labels' config
+        shell: bash
+        run: |
+          mkdir -p .tmp
+          curl -LsS https://raw.githubusercontent.com/devops-infra/.github/master/.github/labels.yml -o .tmp/labels.yml
+
+      - name: Update labels
+        uses: crazy-max/ghaction-github-labeler@v5.2.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          yaml-file: .tmp/labels.yml
