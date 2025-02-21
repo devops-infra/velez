@@ -6,6 +6,7 @@ from pick import pick
 from terragrunt_ops import TerragruntOperations
 
 
+
 class Velez:
     menu_back = "🔙 Back"
     menu_exit = "🚪 Exit"
@@ -13,6 +14,8 @@ class Velez:
 
     def __init__(self, base_dir=None):
         self.base_dir = base_dir if base_dir else os.getcwd()
+        self.use_s3_backend = os.getenv('VELEZ_USE_S3_BACKEND', 'true') == 'true'
+        self.use_dynamodb_locks = os.getenv('VELEZ_USE_DYNAMODB_LOCKS', 'true') == 'true'
         self.terragrunt_ops = TerragruntOperations(self)
 
     def main_menu(self):
@@ -43,7 +46,7 @@ class Velez:
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Velez CLI')
+    parser = argparse.ArgumentParser(description='Velez CLI ∀')
     parser.add_argument('--terragrunt', '-tg', action='store_true', help='Run Terragrunt operations')
     parser.add_argument('pos_args', nargs=argparse.REMAINDER, help='Arguments to pass further')
 
