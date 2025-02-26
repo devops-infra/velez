@@ -1,4 +1,4 @@
 pick==2.4.0
 setuptools==75.8.0
-boto3==1.36.26
+boto3==1.37.0
 python-hcl2==6.1.1
