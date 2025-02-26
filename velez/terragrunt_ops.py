@@ -19,6 +19,14 @@ def list_folders_to_ignore() -> list:
     return ['.terragrunt-cache', '.terraform-plugin-cache']
 
 
+def list_not_wait_for() -> list:
+    """
+    List of commands that can be run without waiting for user input.
+    :return: list
+    """
+    return ['render-json']
+
+
 class TerragruntOperations:
     """
     Class for Terragrunt operations.
@@ -39,7 +47,7 @@ class TerragruntOperations:
         folders = []
         for item in sorted(os.listdir(base_dir)):
             item_path = os.path.join(base_dir, item)
-            if os.path.isdir(item_path) and item not in list_folders_to_ignore():
+            if os.path.isdir(item_path) and item not in list_folders_to_ignore() and not item.startswith('.'):
                 folders.append(item_path)
         return folders
 
@@ -521,35 +529,24 @@ class TerragruntOperations:
         self.run_terragrunt(['run', 'force-unlock'])
         self.action_menu()
 
-    def run_terragrunt(self, arguments: list) -> None:
+    def run_terragrunt(self, arguments: list, quiet: bool = False) -> None:
         """
         Run Terragrunt command.
         :param arguments: list of arguments to pass to Terragrunt
+        :param quiet: if True, suppress output and errors
         :return: None
         """
-        # Commands that be run without waiting for user input
-        not_wait_for = ['render-json']
         args = [i for i in arguments if i is not None or i != '']
         # Building the full command
         command = ['terragrunt'] + args
-        if 'run' in args:
-            command += ['--tf-forward-stdout', '--experiment', 'cli-redesign']
+        # check if cli-redesign is possible
+        if self.velez.terragrunt_version >= '0.73.0':
+            if 'run' in args:
+                command += ['--tf-forward-stdout', '--experiment', 'cli-redesign']
         if self.module:
             command += ['--working-dir', f'{self.module}']
-        print(f"Running command: {' '.join(command)}")
-        try:
-            result = subprocess.run(
-                command,
-                capture_output=True,
-                text=True
-            )
-            print(result.stdout)
-            if result.stderr:
-                print(result.stderr)
-            if not any(i in args for i in not_wait_for):
-                input("Press Enter when ready to continue...")
-        except Exception as e:
-            print(f"An error occurred: {e}")
+        out, err = run_command(command, quiet=quiet)
+        if not any(i in args for i in list_not_wait_for()):
             input("Press Enter when ready to continue...")
 
     def load_terragrunt_config(self) -> dict:
@@ -557,7 +554,7 @@ class TerragruntOperations:
         Load Terragrunt module configuration from running Terragrunt.
         :return: dict
         """
-        self.run_terragrunt(['render-json', '--out', self.velez.temp_config])
+        run_command(['terragrunt', 'render-json', '--out', self.velez.temp_config], quiet=True)
         return load_json_file(self.velez.temp_config)
 
     def update_self(self, module_path: str) -> None:
