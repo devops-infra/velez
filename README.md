@@ -56,12 +56,15 @@ Framework is written in Python and can be installed as a package.
     ```
 3. Install other dependencies:
     * Install Python if not installed yet - required.
+    * Install Terragrunt, and Terraform or OpenTofu - required for IaaC operations.
     * Install `hcledit` - required for updating `.hcl` files.
-    * Install `direnv` if not installed yet - highly suggested for managing environments. 
+    * Install `direnv` or similar solution - highly suggested for managing environments. 
 
     It can be installed, e.g. by running:
     ```sh
     brew install python
+    brew install terraform
+    brew install terragrunt
     brew install direnv
     brew install minamijoyo/hcledit/hcledit
     ```
@@ -131,12 +134,10 @@ velez -tg plan aws/dev-account
 
 ## Configuration
 
-Velez expects following environment variables to be set if corresponding values are not hardcoded in the root Terragrunt
-configuration file:
+Velez expects following environment variables to be set:
 
-* `VELEZ_ROOT_HCL` - relative path to the Terragrunt configuration file, e.g. `root.hcl`.
-* `VELEZ_TEMP_CONFIG` - absolute path to a temporary file created to render Terragrunt configuration, e.g.
-  `/tmp/terragrunt.hcl`.
+* `VELEZ_ROOT_HCL` - relative path to the Terragrunt configuration file (defaults to `root.hcl`, as per the current recommendations).
+* `VELEZ_TEMP_CONFIG` - absolute path to a temporary file created to render Terragrunt configuration (defaults to `/tmp/terragrunt.hcl`).
 
 For the convenience, these variables can be set in a `.env` file in the project directory and use the `direnv` (mentioned above) to load
 them automatically for every project separately.
