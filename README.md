@@ -4,7 +4,8 @@ DevOps/CloudOps CLI framework for making work with Terragrunt and performing var
 
 Do you want to automate your daily tasks with Terragrunt, Terraform, GitHub, and other tools? Velez is here to help you!
 
-Do you sometimes forget to add changed files before pushing to GitHub? Velez will do that for you and even format HCL files before committing!
+Do you sometimes forget to add changed files before pushing to GitHub? Velez will do that for you and even format HCL
+files before committing!
 
 <a href="https://gitmoji.dev">
   <img
@@ -15,18 +16,20 @@ Do you sometimes forget to add changed files before pushing to GitHub? Velez wil
 
 ## Disclaimer
 
-This project is in the early development stage and is not ready for production use.
+This project is in the early development stage and is not ready for production use. It is a work in progress and may
+contain bugs, incomplete features, incorrect documentation, backward incompatible changes or other issues.
+Use it at your own risk.
 
-Since it operates on the infrastructure, user is responsible for the consequences of the actions taken by the tool and should review the code before using it.
-
+Since it operates on the infrastructure, user is responsible for the consequences of the actions taken by the tool and
+should review the code before using it.
 
 ![Velez](img/velez.jpg)
-
 
 ## Features
 
 Supporting following services/tools and operations on them:
-- Terragrunt:
+
+- Terragrunt operations `-tg`:
     - Walk directory structure containing Terragrunt modules.
     - Run Plan, Apply, Destroy and Output on a selected module or a specific target.
     - Taint and Untaint a resource.
@@ -38,15 +41,15 @@ Supporting following services/tools and operations on them:
         - Move a module to a new directory, including moving remote state.
         - Destroy resources and backend of the module.
         - Destroy backend of the module.
-- File operations:
+- File operations `-f`:
     - Formatting all HCL files in the project.
     - Cleaning up temporary files in the project or a selected module.
-- GitHub operations:
+- GitHub operations `-gh`:
     - Source operations, like commit, amend, push, pull or rebase.
     - Branch operations, like create, change local or remote, delete local or remote.
     - Manage pull requests, like create, list in the repository or the whole organization.
     - Manage issues, like create, list in the repository or the whole organization.
-
+    - Easily remove stale branches.
 
 ## Installation
 
@@ -64,9 +67,9 @@ Framework is written in Python and can be installed as a package.
     * Install Python if not installed yet - required.
     * Install Terragrunt, and Terraform or OpenTofu - required for IaaC operations.
     * Install `hcledit` - required for updating `.hcl` files.
-    * Install `direnv` or similar solution - highly suggested for managing environments. 
+    * Install `direnv` or similar solution - highly suggested for managing environments.
 
-    It can be installed, e.g. by running:
+   It can be installed, e.g. by running:
     ```sh
     brew install python
     brew install terraform
@@ -79,7 +82,6 @@ Framework is written in Python and can be installed as a package.
     pip install .
     ```
 
-
 ## Usage
 
 ### Help
@@ -90,8 +92,7 @@ Run the CLI with the `--help` argument to see the available commands:
 velez --help
 ```
 
-To use the Velez CLI, you have two options:
-
+To use the Velez CLI, you have three options:
 
 ### Interactive Menu
 
@@ -101,10 +102,35 @@ Run the CLI without additional arguments to use the interactive menu:
 velez
 ```
 
+### Interactive Menu for specific operation
 
-### Automation
+#### Terragrunt operations (`-tg` or `--terragrunt`)
+
+```sh
+velez --terragrunt <operation> <module> <other-arguments>
+```
+
+#### File operations (`-f` or `--file`)
+
+Show menu for file operations:
+
+```sh
+velez --file
+```
+
+#### GitHub operations (`-gh` or `--github`)
+
+Show menu for GitHub operations:
+
+```sh
+velez --github
+```
+
+### Automation / CLI
 
 Run the CLI with additional arguments for automation/scripting:
+
+#### Terragrunt operations (`-tg` or `--terragrunt`)
 
 ```sh
 velez --terragrunt <operation> <module> <other-arguments>
@@ -137,22 +163,24 @@ Run the following command to plan the `aws/dev-account` module:
 velez -tg plan aws/dev-account
 ``` 
 
-
 ## Configuration
 
 Velez expects following environment variables to be set:
 
-* `VELEZ_ROOT_HCL` - relative path to the Terragrunt configuration file (defaults to `root.hcl`, as per the current recommendations).
-* `VELEZ_TEMP_CONFIG` - absolute path to a temporary file created to render Terragrunt configuration (defaults to `/tmp/terragrunt.hcl`).
-* `GITHUB_TOKEN` - GitHub token for accessing the GitHub API.
+| Variable                          | Description                                                                   | Required for operations | Default               |
+|-----------------------------------|-------------------------------------------------------------------------------|-------------------------|-----------------------|
+| `VELEZ_TG_ROOT_HCL`               | Relative path to the Terragrunt configuration file.                           | Terragrunt              | `root.hcl`            |
+| `VELEZ_TG_TEMP_CONFIG`            | Absolute path to a temporary file created to render Terragrunt configuration. | Terragrunt              | `/tmp/terragrunt.hcl` |
+| `GITHUB_TOKEN`                    | GitHub token for accessing the GitHub API.                                    | GitHub                  | `N/A`                 |
+| `VELEZ_GH_STALE_BRANCHES_DAYS`    | Number of days after which branches are considered stale.                     | GitHub                  | `45`                  |
+| `VELEZ_GH_STALE_BRANCHES_COMMITS` | Number of commits after which branches are considered stale.                  | GitHub                  | `30`                  |
 
-For the convenience, these variables can be set in a `.env` file in the project directory and use the `direnv` (mentioned above) to load
-them automatically for every project separately.
+For the convenience, these variables can be set in a `.env` file in the project directory and use the `direnv` (
+mentioned above) to load them automatically for every project separately.
 
-Veles will read Terragrunt configuration and expand any dynamic config available statically. 
-For example for each selected Terragrunt module backed configuration will be read to determine exact values of the S3 bucket and DynamoDB table and key used for locking the state.
-
-
+Veles will read Terragrunt configuration and expand any dynamic config available statically.
+For example for each selected Terragrunt module backed configuration will be read to determine exact values of the S3
+bucket and DynamoDB table and key used for locking the state.
 
 ## License
 
