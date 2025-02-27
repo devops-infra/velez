@@ -110,6 +110,18 @@ class Velez:
         return ok
 
     @staticmethod
+    def get_tf_ot() -> str:
+        """
+        Get Terraform or OpenTofu binary.
+        :return: binary name
+        """
+        if shutil.which('terraform'):
+            return 'terraform'
+        if shutil.which('tofu'):
+            return 'tofu'
+        return ''
+
+    @staticmethod
     def check_terragrunt() -> bool:
         ok = True
         if not shutil.which('terragrunt'):
