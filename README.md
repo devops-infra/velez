@@ -4,7 +4,7 @@ DevOps/CloudOps CLI framework for making work with Terragrunt and performing var
 
 Do you want to automate your daily tasks with Terragrunt, Terraform, GitHub, and other tools? Velez is here to help you!
 
-Do yoy sometimes forget to add changed files before pushing to GitHub? Velez will do that for you and even format HCL files before commiting!
+Do you sometimes forget to add changed files before pushing to GitHub? Velez will do that for you and even format HCL files before committing!
 
 <a href="https://gitmoji.dev">
   <img
@@ -25,27 +25,27 @@ Since it operates on the infrastructure, user is responsible for the consequence
 
 ## Features
 
-- Supporting following services/tools and operations on them:
-    - Terragrunt:
-        - Walk directory structure containing Terragrunt modules.
-        - Run Plan, Apply, Destroy and Output on a selected module or a specific target.
-        - Taint and Untaint a resource.
-        - Unlock module and show lock information.
-        - Run Validate and Refresh on a selected module.
-        - Import a resource to the state.
-        - Run State operations, like list, move, remove, show, pull and push.
-        - Run Module operations on source modules:
-            - Move a module to a new directory, including moving remote state.
-            - Destroy resources and backend of the module.
-            - Destroy backend of the module.
-    - File operations:
-        - Formatting all HCL files in the project.
-        - Cleaning up temporary files in the project or a selected module.
-    - GitHub operations:
-        - Source operations, like commit, amend, push, pull or rebase.
-        - Branch operations, like create, change local or remote, delete local or remote.
-        - Manage pull requests, like create, list in the repository or the whole organization.
-        - Manage issues, like create, list in the repository or the whole organization.
+Supporting following services/tools and operations on them:
+- Terragrunt:
+    - Walk directory structure containing Terragrunt modules.
+    - Run Plan, Apply, Destroy and Output on a selected module or a specific target.
+    - Taint and Untaint a resource.
+    - Unlock module and show lock information.
+    - Run Validate and Refresh on a selected module.
+    - Import a resource to the state.
+    - Run State operations, like list, move, remove, show, pull and push.
+    - Run Module operations on source modules:
+        - Move a module to a new directory, including moving remote state.
+        - Destroy resources and backend of the module.
+        - Destroy backend of the module.
+- File operations:
+    - Formatting all HCL files in the project.
+    - Cleaning up temporary files in the project or a selected module.
+- GitHub operations:
+    - Source operations, like commit, amend, push, pull or rebase.
+    - Branch operations, like create, change local or remote, delete local or remote.
+    - Manage pull requests, like create, list in the repository or the whole organization.
+    - Manage issues, like create, list in the repository or the whole organization.
 
 
 ## Installation

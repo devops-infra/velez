@@ -109,7 +109,7 @@ class GitHubOperations:
         """
         run_command(['git', 'add', '-A'])
 
-        # format HCL files before commiting
+        # format HCL files before committing
         if self.velez.file_ops is None:
             self.velez.file_ops = FileOperations(self.velez)
         self.velez.file_ops.format_hcl_files()
