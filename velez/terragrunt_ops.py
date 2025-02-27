@@ -4,6 +4,7 @@ import sys
 
 import boto3
 from pick import pick
+from velez.file_ops import FileOperations
 from velez.utils import run_command, str_back, str_exit
 
 str_plan = "▷ Plan"
@@ -264,7 +265,9 @@ class TerragruntOperations:
             self.refresh_action()
             self.action_menu()
         elif option == str_clean_files:
-            self.velez.file_ops.file_menu()
+            if self.velez.file_ops is None:
+                self.velez.file_ops = FileOperations(self.velez)
+            self.velez.file_ops.clean_files()
             self.action_menu()
         elif option == str_state_menu:
             self.state_menu()
@@ -665,6 +668,8 @@ class TerragruntOperations:
         :return: dict
         """
         run_command(['terragrunt', 'render-json', '--out', self.velez.temp_config], quiet=True)
+        if self.velez.file_ops is None:
+            self.velez.file_ops = FileOperations(self.velez)
         return self.velez.file_ops.load_json_file(self.velez.temp_config)
 
     def update_self(self, module_path: str) -> None:

@@ -4,6 +4,7 @@ import sys
 
 import github
 from pick import pick
+from velez.file_ops import FileOperations
 from velez.utils import str_back, str_exit, run_command
 
 str_commit = "→ Commit"
@@ -99,8 +100,7 @@ class GitHubOperations:
 
         self.github_menu()
 
-    @staticmethod
-    def commit(amend: bool = False) -> None:
+    def commit(self, amend: bool = False) -> None:
         """
         Add all files to the staging area and commit them.
         Can also amend the last commit.
@@ -108,10 +108,13 @@ class GitHubOperations:
         :return: None
         """
         run_command(['git', 'add', '-A'])
+
+        # format HCL files before commiting
+        if self.velez.file_ops is None:
+            self.velez.file_ops = FileOperations(self.velez)
+        self.velez.file_ops.format_hcl_files()
+
         run_command(['git', 'diff', '--compact-summary'])
-        # title = input("Enter commit title: ")
-        # message = input("Enter commit message: ")
-        # git_command = ['git', 'commit', '-am', title, '-m', message, '--allow-empty']
         git_command = ['git', 'commit']
         if amend:
             git_command.append('--amend')

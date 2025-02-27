@@ -2,6 +2,10 @@
 
 DevOps/CloudOps CLI framework for making work with Terragrunt and performing various cloud operations much easier.
 
+Do you want to automate your daily tasks with Terragrunt, Terraform, GitHub, and other tools? Velez is here to help you!
+
+Do yoy sometimes forget to add changed files before pushing to GitHub? Velez will do that for you and even format HCL files before commiting!
+
 <a href="https://gitmoji.dev">
   <img
     src="https://img.shields.io/badge/gitmoji-%20😜%20😍-FFDD67.svg?style=flat-square"

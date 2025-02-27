@@ -5,8 +5,7 @@ import sys
 
 import hcl2
 from pick import pick
-from velez.utils import run_command, str_back, str_exit
-from velez.terragrunt_ops import TerragruntOperations
+from velez.utils import str_back, str_exit, run_command
 
 str_format_files = "⎆ Format HCL files"
 str_clean_files = "⌧ Clean temporary files"
@@ -51,39 +50,12 @@ class FileOperations:
         :return: None
         """
         print("Formatting HCL files...")
-        if self.velez.terragrunt_ops is None:
-            self.velez.terragrunt_ops = TerragruntOperations(self.velez)
-        self.velez.terragrunt_ops.run_terragrunt(arguments=['hclfmt'])
-
-    @staticmethod
-    def load_hcl_file(hcl_file: str) -> dict:
-        """
-        Load HCL file into a dictionary.
-        :param hcl_file: HCL file to load
-        :return: dictionary of HCL file
-        """
-        with open(hcl_file, 'r') as fr:
-            return hcl2.load(fr)
-
-    @staticmethod
-    def load_json_file(json_file: str) -> dict:
-        """
-        Load JSON file into a dictionary.
-        :param json_file: JSON file to load
-        :return: dictionary of JSON file
-        """
-        with open(json_file, 'r') as fr:
-            return json.load(fr)
-
-    @staticmethod
-    def format_hcl_file(file: str) -> None:
-        """
-        Format HCL file.
-        :param file: HCL file to format
-        :return: None
-        """
-        print(f"Formatting HCL file {file}")
-        run_command(['terragrunt', 'hclfmt', file])
+        if self.velez.check_terragrunt():
+            run_command(['terragrunt', 'hclfmt'])
+            if self.velez.get_tf_ot() == 'terraform':
+                run_command(['terraform', 'fmt', '-recursive', '.'])
+            elif self.velez.get_tf_ot() == 'tofu':
+                run_command(['tofu', 'fmt', '-recursive', '.'])
 
     @staticmethod
     def clean_files(clean_path: str = '.') -> None:
@@ -130,3 +102,23 @@ class FileOperations:
                     except Exception as e:
                         print(f"Error removing {file_path}: {e}")
         input("Press Enter to return to the file menu...")
+
+    @staticmethod
+    def load_hcl_file(hcl_file: str) -> dict:
+        """
+        Load HCL file into a dictionary.
+        :param hcl_file: HCL file to load
+        :return: dictionary of HCL file
+        """
+        with open(hcl_file, 'r') as fr:
+            return hcl2.load(fr)
+
+    @staticmethod
+    def load_json_file(json_file: str) -> dict:
+        """
+        Load JSON file into a dictionary.
+        :param json_file: JSON file to load
+        :return: dictionary of JSON file
+        """
+        with open(json_file, 'r') as fr:
+            return json.load(fr)
