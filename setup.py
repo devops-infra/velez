@@ -7,7 +7,8 @@ setup(
     install_requires=[
         'pick',
         'boto3',
-        'python-hcl2'
+        'python-hcl2',
+        'PyGithub'
     ],
     entry_points={
         'console_scripts': [

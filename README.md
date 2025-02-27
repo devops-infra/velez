@@ -2,6 +2,10 @@
 
 DevOps/CloudOps CLI framework for making work with Terragrunt and performing various cloud operations much easier.
 
+Do you want to automate your daily tasks with Terragrunt, Terraform, GitHub, and other tools? Velez is here to help you!
+
+Do you sometimes forget to add changed files before pushing to GitHub? Velez will do that for you and even format HCL files before committing!
+
 <a href="https://gitmoji.dev">
   <img
     src="https://img.shields.io/badge/gitmoji-%20😜%20😍-FFDD67.svg?style=flat-square"
@@ -9,37 +13,39 @@ DevOps/CloudOps CLI framework for making work with Terragrunt and performing var
   />
 </a>
 
+## Disclaimer
+
+This project is in the early development stage and is not ready for production use.
+
+Since it operates on the infrastructure, user is responsible for the consequences of the actions taken by the tool and should review the code before using it.
+
 
 ![Velez](img/velez.jpg)
 
 
 ## Features
 
-- Supporting following services/tools and operations on them:
-    - Terragrunt:
-        - Walk directory structure containing Terragrunt modules.
-        - Run Plan on a selected module or a specific target.
-        - Run Apply on a selected module or a specific target.
-        - Import a resource to the state.
-        - Run Destroy on a selected module or a specific target.
-        - Run Output on a selected module or a specific target.
-        - Run Validate on a selected module.
-        - Run Refresh on a selected module.
-        - Run State operations like:
-            - List resources.
-            - Move a resource.
-            - Remove a resource.
-            - Show resource.
-            - Pull and push state.
-        - Run Module operations on source modules:
-            - Move a module to a new directory, including moving remote state.
-            - Destroy resources and backend of the module.
-            - Destroy backend of the module.
-        - Taint and Untaint a resource.
-        - Unlock module and show lock information.
-    - File operations:
-        - Formatting all HCL files in the project.
-        - Cleaning up temporary files in the project or a selected module.
+Supporting following services/tools and operations on them:
+- Terragrunt:
+    - Walk directory structure containing Terragrunt modules.
+    - Run Plan, Apply, Destroy and Output on a selected module or a specific target.
+    - Taint and Untaint a resource.
+    - Unlock module and show lock information.
+    - Run Validate and Refresh on a selected module.
+    - Import a resource to the state.
+    - Run State operations, like list, move, remove, show, pull and push.
+    - Run Module operations on source modules:
+        - Move a module to a new directory, including moving remote state.
+        - Destroy resources and backend of the module.
+        - Destroy backend of the module.
+- File operations:
+    - Formatting all HCL files in the project.
+    - Cleaning up temporary files in the project or a selected module.
+- GitHub operations:
+    - Source operations, like commit, amend, push, pull or rebase.
+    - Branch operations, like create, change local or remote, delete local or remote.
+    - Manage pull requests, like create, list in the repository or the whole organization.
+    - Manage issues, like create, list in the repository or the whole organization.
 
 
 ## Installation
@@ -138,6 +144,7 @@ Velez expects following environment variables to be set:
 
 * `VELEZ_ROOT_HCL` - relative path to the Terragrunt configuration file (defaults to `root.hcl`, as per the current recommendations).
 * `VELEZ_TEMP_CONFIG` - absolute path to a temporary file created to render Terragrunt configuration (defaults to `/tmp/terragrunt.hcl`).
+* `GITHUB_TOKEN` - GitHub token for accessing the GitHub API.
 
 For the convenience, these variables can be set in a `.env` file in the project directory and use the `direnv` (mentioned above) to load
 them automatically for every project separately.

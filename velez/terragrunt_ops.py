@@ -1,41 +1,152 @@
 import os
-import subprocess
+import re
 import sys
 
 import boto3
 from pick import pick
-from velez.file_ops import load_json_file, clean_files
-from velez.utils import run_command, str_back, str_exit, str_apply, str_plan, str_import, str_destroy, str_output, \
-    str_init, str_validate, str_refresh, str_state_menu, str_module_menu, str_taint_menu, str_lock_menu, str_state_list, \
-    str_state_move, str_state_rm, str_state_show, str_state_pull, str_state_push, str_module_move, str_module_destroy, \
-    str_module_destroy_backend, str_taint, str_untaint, str_lock_info, str_unlock, str_clean_files
+from velez.file_ops import FileOperations
+from velez.utils import run_command, str_back, str_exit
 
-
-def list_folders_to_ignore() -> list:
-    """
-    List of folders to ignore when listing folders.
-    :return: list
-    """
-    return ['.terragrunt-cache', '.terraform-plugin-cache']
-
-
-def list_not_wait_for() -> list:
-    """
-    List of commands that can be run without waiting for user input.
-    :return: list
-    """
-    return ['render-json']
+str_plan = "▷ Plan"
+str_apply = "▶︎ Apply"
+str_import = "◁ Import"
+str_destroy = "⌧ Destroy"
+str_output = "✉︎ Output"
+str_init = "✦ Initialize"
+str_validate = "☑ Validate"
+str_refresh = "♻ Refresh"
+str_state_menu = "⌖ State operations"
+str_state_list = "⌸ List"
+str_state_move = "↔ Move"
+str_state_rm = "⌧ Remove"
+str_state_show = "⎚ Show"
+str_state_pull = "↓ Pull"
+str_state_push = "↑ Push"
+str_module_menu = "⎄ Module operations"
+str_module_move = "↔ Move module"
+str_module_destroy = "⌧ Destroy module"
+str_module_destroy_backend = "⌧ Destroy backend"
+str_taint_menu = "☣︎ Taint operations"
+str_taint = "☣ Taint"
+str_untaint = "♺️ Untaint"
+str_lock_menu = "⎉ Lock operations"
+str_lock_info = "ℹ Lock info"
+str_unlock = "⇭ Unlock"
+str_clean_files = "⌧ Clean temporary files"
 
 
 class TerragruntOperations:
     """
     Class for Terragrunt operations.
     """
-    def __init__(self, velez):
-        self.module = ''  # Will be updated for each module separately
-        self.velez = velez
 
-    def list_folders(self, base_dir: str=None) -> list:
+    def __init__(self, velez):
+        self.velez = velez
+        if not self.velez.check_terragrunt():
+            input("Press Enter to return to the main menu...")
+            self.velez.main_menu()
+        self.root_hcl = os.getenv('VELEZ_ROOT_HCL', 'root.hcl')  # Root Terragrunt config file
+        if not os.path.exists(self.root_hcl):
+            print(f"Root Terragrunt config file {self.root_hcl} not found.")
+            input("Press Enter to return to the main menu...")
+            self.velez.main_menu()
+        self.temp_config = os.getenv('VELEZ_TEMP_CONFIG',
+                                     '/tmp/terragrunt_rendered.json')  # Temporary file to store rendered config
+        self.use_s3_backend = False  # If S3 backend is used, will be updated for each module separately
+        self.use_dynamodb_locks = False  # If DynamoDB locks are used, will be updated for each module separately
+        self.dynamodb_table = None  # DynamoDB table name, will be updated for each module separately
+        self.dynamodb_lockid = None  # DynamoDB lock ID, will be updated for each module separately
+        self.s3_bucket_name = None  # S3 backend bucket name, will be updated for each module separately
+        self.s3_state_key = None  # S3 tfstate key, will be updated for each module separately
+        self.s3_state_path = None  # Full S3 tfstate path, will be updated for each module separately
+        self.terragrunt_version = self.get_terragrunt_version(quiet=True)
+        self.terraform_version = self.get_terraform_version(quiet=True)
+        self.opentofu_version = self.get_opentofu_version(quiet=True)
+        self.module = None  # Will be updated for each module separately
+
+    @staticmethod
+    def list_folders_to_ignore() -> list:
+        """
+        List of folders to ignore when listing folders.
+        :return: list
+        """
+        return ['.terragrunt-cache', '.terraform-plugin-cache']
+
+    @staticmethod
+    def list_not_wait_for() -> list:
+        """
+        List of commands that can be run without waiting for user input.
+        :return: list
+        """
+        return ['render-json', 'init']
+
+    @staticmethod
+    def get_terraform_version(quiet: bool = False) -> str:
+        """
+        Check Terraform version.
+        :param quiet: if True, suppress output and errors
+        :return: Terraform version as a string
+        """
+        terraform_version = ''
+        try:
+            output, err = run_command(['terraform', '-version'], quiet=quiet)
+            if output:
+                first_line = output.splitlines()[0]
+                match = re.search(r'Terraform v(\d+\.\d+\.\d+)', first_line)
+                if match:
+                    terraform_version = match.group(1)
+                    if not quiet:
+                        print(f'Terraform version: {terraform_version}')
+        except Exception as e:
+            if not quiet:
+                print(f'Error checking Terraform version: {e}')
+        return terraform_version
+
+    @staticmethod
+    def get_opentofu_version(quiet: bool = False) -> str:
+        """
+        Check OpenTofu version.
+        :param quiet: if True, suppress output and errors
+        :return: OpenTofu version as a string
+        """
+        opentofu_version = ''
+        try:
+            output, err = run_command(['tofu', '--version'], quiet=quiet)
+            if output:
+                first_line = output.splitlines()[0]
+                match = re.search(r'OpenTofu v(\d+\.\d+\.\d+)', first_line)
+                if match:
+                    opentofu_version = match.group(1)
+                    if not quiet:
+                        print(f'OpenTofu version: {opentofu_version}')
+        except Exception as e:
+            if not quiet:
+                print(f'Error checking OpenTofu version: {e}')
+        return opentofu_version
+
+    @staticmethod
+    def get_terragrunt_version(quiet: bool = False) -> str:
+        """
+        Check Terragrunt version.
+        :param quiet: if True, suppress output and errors
+        :return: Terragrunt version as a string
+        """
+        terragrunt_version = ''
+        try:
+            output, err = run_command(['terragrunt', '-v'], quiet=quiet)
+            if output:
+                first_line = output.splitlines()[0]
+                match = re.search(r'terragrunt version (\d+\.\d+\.\d+)', first_line)
+                if match:
+                    terragrunt_version = match.group(1)
+                    if not quiet:
+                        print(f'Terragrunt version: {terragrunt_version}')
+        except Exception as e:
+            if not quiet:
+                print(f'Error checking Terragrunt version: {e}')
+        return terragrunt_version
+
+    def list_folders(self, base_dir: str = None) -> list:
         """
         List all folders in the base directory.
         :param base_dir: base directory to list folders from
@@ -47,11 +158,11 @@ class TerragruntOperations:
         folders = []
         for item in sorted(os.listdir(base_dir)):
             item_path = os.path.join(base_dir, item)
-            if os.path.isdir(item_path) and item not in list_folders_to_ignore() and not item.startswith('.'):
+            if os.path.isdir(item_path) and item not in self.list_folders_to_ignore() and not item.startswith('.'):
                 folders.append(item_path)
         return folders
 
-    def folder_menu(self, current_dir: str=None) -> None:
+    def folder_menu(self, current_dir: str = None) -> None:
         """
         Display folder menu.
         :param current_dir: current directory
@@ -75,7 +186,7 @@ class TerragruntOperations:
                 options.append(f"📁 {os.path.basename(folder)}")
         options += [str_back, str_exit]
 
-        title = f"Choose a folder to explore. Current Directory: {os.path.relpath(current_dir, self.velez.base_dir)}"
+        title = f"Current Directory: {os.path.relpath(current_dir, self.velez.base_dir)}. Choose a folder to explore:"
         option, index = pick(options, title)
 
         if option == str_back:
@@ -122,7 +233,7 @@ class TerragruntOperations:
             str_back,
             str_exit
         ]
-        title = f"Choose an action. Current Module: {self.module}:"
+        title = f"Current Module: {self.module}. Choose an action:"
         option, index = pick(options, title)
 
         if option == str_back:
@@ -154,7 +265,9 @@ class TerragruntOperations:
             self.refresh_action()
             self.action_menu()
         elif option == str_clean_files:
-            clean_files()
+            if self.velez.file_ops is None:
+                self.velez.file_ops = FileOperations(self.velez)
+            self.velez.file_ops.clean_files()
             self.action_menu()
         elif option == str_state_menu:
             self.state_menu()
@@ -253,7 +366,7 @@ class TerragruntOperations:
             str_back,
             str_exit
         ]
-        state_title = f"Choose a state operation. Current Module: {self.module}:"
+        state_title = f"Current Module: {self.module}. Choose a state operation:"
         state_option, state_index = pick(state_options, state_title)
         if state_option == str_back:
             self.action_menu()
@@ -297,7 +410,7 @@ class TerragruntOperations:
             str_exit
         ]
         module_options = [i for i in module_options if i is not None or i != '']
-        module_title = f"Choose a module operation. Current Module: {self.module}:"
+        module_title = f"Current Module: {self.module}. Choose a module operation:"
         module_option, module_index = pick(module_options, module_title)
         if module_option == str_back:
             self.action_menu()
@@ -321,7 +434,7 @@ class TerragruntOperations:
             str_back,
             str_exit
         ]
-        taint_title = f"Choose a taint operation. Current Module: {self.module}:"
+        taint_title = f"Current Module: {self.module}. Choose a taint operation"
         taint_option, taint_index = pick(taint_options, taint_title)
         if taint_option == str_back:
             self.action_menu()
@@ -343,7 +456,7 @@ class TerragruntOperations:
             str_back,
             str_exit
         ]
-        lock_title = f"Choose a lock operation. Current Module: {self.module}:"
+        lock_title = f"Current Module: {self.module}. Choose a lock operation:"
         lock_option, lock_index = pick(lock_options, lock_title)
         if lock_option == str_back:
             self.action_menu()
@@ -430,8 +543,8 @@ class TerragruntOperations:
             os.rmdir(self.module)
         except Exception as e:
             print(f"An error occurred: {e}")
-
-        self.action_menu(os.path.dirname(self.module))
+        # Jump to parent folder
+        self.folder_menu(os.path.dirname(self.module))
 
     def module_destroy_backend_action(self) -> None:
         """
@@ -546,7 +659,7 @@ class TerragruntOperations:
         if self.module:
             command += ['--working-dir', f'{self.module}']
         out, err = run_command(command, quiet=quiet)
-        if not any(i in args for i in list_not_wait_for()):
+        if not any(i in args for i in self.list_not_wait_for()):
             input("Press Enter when ready to continue...")
 
     def load_terragrunt_config(self) -> dict:
@@ -555,7 +668,9 @@ class TerragruntOperations:
         :return: dict
         """
         run_command(['terragrunt', 'render-json', '--out', self.velez.temp_config], quiet=True)
-        return load_json_file(self.velez.temp_config)
+        if self.velez.file_ops is None:
+            self.velez.file_ops = FileOperations(self.velez)
+        return self.velez.file_ops.load_json_file(self.velez.temp_config)
 
     def update_self(self, module_path: str) -> None:
         """
