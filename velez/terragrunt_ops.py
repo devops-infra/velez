@@ -45,12 +45,12 @@ class TerragruntOperations:
         if not self.velez.check_terragrunt():
             input("Press Enter to return to the main menu...")
             self.velez.main_menu()
-        self.root_hcl = os.getenv('VELEZ_ROOT_HCL', 'root.hcl')  # Root Terragrunt config file
+        self.root_hcl = os.getenv('VELEZ_TG_ROOT_HCL', 'root.hcl')  # Root Terragrunt config file
         if not os.path.exists(self.root_hcl):
             print(f"Root Terragrunt config file {self.root_hcl} not found.")
             input("Press Enter to return to the main menu...")
             self.velez.main_menu()
-        self.temp_config = os.getenv('VELEZ_TEMP_CONFIG',
+        self.temp_config = os.getenv('VELEZ_TG_TEMP_CONFIG',
                                      '/tmp/terragrunt_rendered.json')  # Temporary file to store rendered config
         self.use_s3_backend = False  # If S3 backend is used, will be updated for each module separately
         self.use_dynamodb_locks = False  # If DynamoDB locks are used, will be updated for each module separately

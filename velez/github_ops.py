@@ -1,11 +1,15 @@
 import os
 import re
 import sys
+from datetime import datetime
 
 import github
 from pick import pick
 from velez.file_ops import FileOperations
 from velez.utils import str_back, str_exit, run_command
+
+STALE_BRANCHES_DAYS = int(os.getenv('VELEZ_GH_STALE_BRANCHES_DAYS', 45))
+STALE_BRANCHES_COMMITS = int(os.getenv('VELEZ_GH_STALE_BRANCHES_COMMITS', 30))
 
 str_commit = "→ Commit"
 str_amend = "⇢ Amend commit"
@@ -28,6 +32,7 @@ str_list_pr_org = "⎘ List PRs for the whole organization"
 str_create_issue = "✶ Create new issue"
 str_list_issues_repo = "⎗ List issues in the repository"
 str_list_issues_org = "⎘ List issues for the whole organization"
+str_delete_stale_branches = "⌦ Delete stale branches"
 
 
 class GitHubOperations:
@@ -172,6 +177,7 @@ class GitHubOperations:
             str_select_remote_branch,
             str_delete_local_branch,
             str_delete_remote_branch,
+            str_delete_stale_branches,
             str_back,
             str_exit
         ]
@@ -187,6 +193,8 @@ class GitHubOperations:
             self.delete_local_branch()
         elif option == str_delete_remote_branch:
             self.delete_remote_branch()
+        elif option == str_delete_stale_branches:
+            self.delete_stale_branches()
         elif option == str_back:
             self.github_menu()
         elif option == str_exit:
@@ -398,3 +406,48 @@ class GitHubOperations:
         for issue in issues:
             print(f"#{issue.number} - {issue.title}\nURL: {issue.html_url}\n")
         input("Press Enter to return to the GitHub menu...")
+
+    def get_stale_branches(self) -> list:
+        """
+        Get a list of stale branches based on the set criteria.
+        :return: list of stale branches
+        """
+        stale_branches = []
+        branches = self.repo.get_branches()
+        main_branch = self.repo.get_branch(self.repo.default_branch)
+        main_branch_commit = main_branch.commit
+
+        for branch in branches:
+            if branch.name == main_branch.name:
+                continue
+
+            branch_commit = branch.commit
+            commit_date = branch_commit.commit.author.date
+            days_since_last_commit = (datetime.now(tz=commit_date.tzinfo) - commit_date).days
+            commits_behind = self.repo.compare(main_branch_commit.sha, branch_commit.sha).behind_by
+
+            if days_since_last_commit > STALE_BRANCHES_DAYS or commits_behind > STALE_BRANCHES_COMMITS:
+                stale_branches.append(branch.name)
+
+        return stale_branches
+
+    def delete_stale_branches(self) -> None:
+        """
+        Delete stale branches based on the set criteria.
+        :return: None
+        """
+        stale_branches = self.get_stale_branches()
+        if not stale_branches:
+            print("No stale branches found.")
+            input("Press Enter to return to the branches menu...")
+            return
+
+        title = f"Current branch: {self.branch}. Select a stale branch to delete:"
+        option, index = pick(stale_branches + [str_back, str_exit], title)
+        if option == str_back:
+            self.branches_menu()
+        elif option == str_exit:
+            sys.exit()
+        else:
+            run_command(['git', 'push', 'origin', '--delete', option])
+            input("Press Enter to return to the branches menu...")
