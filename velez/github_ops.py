@@ -423,7 +423,7 @@ class GitHubOperations:
 
             branch_commit = branch.commit
             commit_date = branch_commit.commit.author.date
-            days_since_last_commit = (datetime.now(datetime.now().astimezone().tzinfo) - commit_date).days
+            days_since_last_commit = (datetime.now(tz=commit_date.tzinfo) - commit_date).days
             commits_behind = self.repo.compare(main_branch_commit.sha, branch_commit.sha).behind_by
 
             if days_since_last_commit > STALE_BRANCHES_DAYS or commits_behind > STALE_BRANCHES_COMMITS:
@@ -442,7 +442,7 @@ class GitHubOperations:
             input("Press Enter to return to the branches menu...")
             return
 
-        title = "Select a stale branch to delete:"
+        title = f"Current branch: {self.branch}. Select a stale branch to delete:"
         option, index = pick(stale_branches + [str_back, str_exit], title)
         if option == str_back:
             self.branches_menu()
