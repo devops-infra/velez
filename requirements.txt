@@ -1,5 +1,5 @@
 pick==2.4.0
 setuptools==75.8.2
-boto3==1.37.7
+boto3==1.37.8
 python-hcl2==6.1.1
 PyGithub==2.6.1
