@@ -14,19 +14,11 @@ files before committing!
   />
 </a>
 
-
-## Advantages
-
-- Terragrunt **backend configuration** is read by invoking `terragrunt` command, so it is **always up to date** and resembles the 
-  **real state of the infrastructure**, not just hardcoded values in the code.
-- All operations are performed in the **context of the current directory**, so you don't have to worry about running
-  commands in the wrong environment.
-
-
 ## Disclaimer
 
 **This project is in the early development stage and is not ready for production use. It is a work in progress and may
 contain bugs, incomplete features, incorrect documentation, backward incompatible changes or other issues.
+
 Use it at your own risk before it reaches 1.x.x version. Read the documentation carefully and test it in a 
 safe environment before using it.**
 
@@ -34,6 +26,14 @@ Since it operates on the infrastructure, user is responsible for the consequence
 should review the code before using it.
 
 ![Velez](img/velez.jpg)
+
+
+## Advantages
+
+- Terragrunt **backend configuration** is read by invoking `terragrunt` command, so it is **always up to date** and resembles the
+  **real state of the infrastructure**, not just hardcoded values in the code.
+- All operations are performed in the **context of the current directory**, so you don't have to worry about running
+  commands in the wrong environment.
 
 
 ## Features
@@ -52,7 +52,7 @@ Supporting following services/tools and operations on them:
         - Move a module to a new directory, including moving remote state.
         - Destroy resources and backend of the module.
         - Destroy backend of the module.
-- File operations `-f` or :
+- File operations `-f` or `--file`:
     - Formatting all HCL files in the project.
     - Cleaning up temporary files in the project or a selected module.
 - GitHub operations `-gh` or `--github`:
