@@ -25,10 +25,12 @@ files before committing!
 
 ## Disclaimer
 
-**This project is in the early development stage and is not ready for production use. It is a work in progress and may
-contain bugs, incomplete features, incorrect documentation, backward incompatible changes or other issues.
-Use it at your own risk before it reaches 1.x.x version. Read the documentation carefully and test it in a 
-safe environment before using it.**
+**This project is in the early development stage and is not ready for production use. And if version is below `1.x.x`, 
+it is not recommended to use it in production. It is not a stable release and should be considered as an alpha version.
+
+It is a work in progress and may  contain bugs, incomplete features, incorrect documentation, backward incompatible 
+changes or other issues. Use it at your own risk before it reaches 1.x.x version. Read the documentation carefully and 
+test it in a safe environment before using it.**
 
 Since it operates on the infrastructure, user is responsible for the consequences of the actions taken by the tool and
 should review the code before using it.
@@ -52,7 +54,7 @@ Supporting following services/tools and operations on them:
         - Move a module to a new directory, including moving remote state.
         - Destroy resources and backend of the module.
         - Destroy backend of the module.
-- File operations `-f` or :
+- File operations `-f` or `--file`:
     - Formatting all HCL files in the project.
     - Cleaning up temporary files in the project or a selected module.
 - GitHub operations `-gh` or `--github`:
