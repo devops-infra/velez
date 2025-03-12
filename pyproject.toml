@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "velez"
-version = "0.3.0"
+version = "0.4.0"
 description = "∀elez is a tool to easily manage complex Terragrunt configurations."
 license = {text = "MIT"}
 readme = "README.md"
