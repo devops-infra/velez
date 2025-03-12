@@ -4,14 +4,17 @@ import shutil
 import sys
 
 from pick import pick
+from importlib.metadata import version
 from velez.file_ops import FileOperations
 from velez.github_ops import GitHubOperations
 from velez.terragrunt_ops import TerragruntOperations
-from velez.utils import str_exit
+from velez.docker_ops import DockerOperations
+from velez.utils import STR_EXIT
 
-str_terragrunt_menu = "⌘ Run Terragrunt"
-str_file_menu = "⑇ File operations"
-str_github_menu = "⇲ GitHub operations"
+STR_TERRAGRUNT_MENU = "🌐 Run Terragrunt"
+STR_FILE_MENU = "📂 File operations"
+STR_GITHUB_MENU = "💻 GitHub operations"
+STR_DOCKER_MENU = "🚢 Docker operations"
 
 
 class Velez:
@@ -24,6 +27,7 @@ class Velez:
         self.terragrunt_ops = None
         self.file_ops = None
         self.github_ops = None
+        self.docker_ops = None
 
     def main_menu(self) -> None:
         """
@@ -32,27 +36,32 @@ class Velez:
         """
         title = "Choose a service:"
         options = [
-            str_terragrunt_menu if self.check_terragrunt() else None,
-            str_file_menu,
-            str_github_menu if self.check_github() else None,
-            str_exit
+            STR_TERRAGRUNT_MENU if self.check_terragrunt() else None,
+            STR_FILE_MENU,
+            STR_GITHUB_MENU if self.check_github() else None,
+            STR_DOCKER_MENU if self.check_docker() else None,
+            STR_EXIT
         ]
         options = [o for o in options if o]
         option, index = pick(options, title)
 
-        if option == str_terragrunt_menu:
+        if option == STR_TERRAGRUNT_MENU:
             if self.terragrunt_ops is None:
                 self.terragrunt_ops = TerragruntOperations(self)
             self.terragrunt_ops.folder_menu()
-        elif option == str_file_menu:
+        elif option == STR_FILE_MENU:
             if self.file_ops is None:
                 self.file_ops = FileOperations(self)
             self.file_ops.file_menu()
-        elif option == str_github_menu:
+        elif option == STR_GITHUB_MENU:
             if self.github_ops is None:
                 self.github_ops = GitHubOperations(self)
             self.github_ops.github_menu()
-        elif option == str_exit:
+        elif option == STR_DOCKER_MENU:
+            if self.docker_ops is None:
+                self.docker_ops = DockerOperations(self)
+            self.docker_ops.docker_menu()
+        elif option == STR_EXIT:
             sys.exit()
 
         self.main_menu()
@@ -123,6 +132,10 @@ class Velez:
 
     @staticmethod
     def check_terragrunt() -> bool:
+        """
+        Check if Terragrunt operations are possible.
+        :return: True if possible, False otherwise
+        """
         ok = True
         if not shutil.which('terragrunt'):
             ok = False
@@ -132,6 +145,23 @@ class Velez:
             print("Error: Terraform or OpenTofu binaries not found.")
         if not ok:
             print("Terragrunt operations are not possible.")
+        return ok
+
+    @staticmethod
+    def check_docker() -> bool:
+        """
+        Check if Docker operations are possible.
+        :return: True if possible, False otherwise
+        """
+        ok = True
+        # if not shutil.which('docker'):
+        #     ok = False
+        #     print("Error: Docker binary not found.")
+        if not os.environ.get("DOCKER_USERNAME") or not os.environ.get("DOCKER_TOKEN"):
+            ok = False
+            print("Error: Docker Hub credentials not set.")
+        if not ok:
+            print("Docker operations are not possible.")
         return ok
 
 
@@ -144,11 +174,17 @@ def main() -> None:
     parser.add_argument('-tg', '--terragrunt', action='store_true', help='Run Terragrunt operations')
     parser.add_argument('-f', '--file', action='store_true', help='Run file operations')
     parser.add_argument('-gh', '--github', action='store_true', help='Run GitHub operations')
+    parser.add_argument('-d', '--docker', action='store_true', help='Run Docker operations')
+    parser.add_argument('-v', '--version', action='store_true', help='Show version')
     parser.add_argument('pos_args', nargs=argparse.REMAINDER, help='Arguments to pass further')
     args = parser.parse_args()
 
+    if args.version:
+        print(f"∀elez version: {version("velez")}")
+        sys.exit()
+
     framework = Velez()
-    framework.run(terragrunt=args.terragrunt, file=args.file, github=args.github, pos_args=args.pos_args)
+    framework.run(terragrunt=args.terragrunt, file=args.file, github=args.github, docker=args.docker, pos_args=args.pos_args)
 
 
 if __name__ == "__main__":

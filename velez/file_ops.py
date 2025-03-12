@@ -5,10 +5,10 @@ import sys
 
 import hcl2
 from pick import pick
-from velez.utils import str_back, str_exit, run_command
+from velez.utils import STR_BACK, STR_EXIT, run_command
 
-str_format_files = "⎆ Format HCL files"
-str_clean_files = "⌧ Clean temporary files"
+STR_FORMAT_FILES = "⎆ Format HCL files"
+STR_CLEAN_FILES = "⌧ Clean temporary files"
 
 
 class FileOperations:
@@ -26,20 +26,20 @@ class FileOperations:
         """
         title = "Choose a file operation:"
         options = [
-            str_format_files,
-            str_clean_files,
-            str_back,
-            str_exit
+            STR_FORMAT_FILES,
+            STR_CLEAN_FILES,
+            STR_BACK,
+            STR_EXIT
         ]
         option, index = pick(options, title)
 
-        if option == str_back:
+        if option == STR_BACK:
             self.velez.main_menu()
-        elif option == str_exit:
+        elif option == STR_EXIT:
             sys.exit()
-        elif option == str_format_files:
+        elif option == STR_FORMAT_FILES:
             self.format_hcl_files()
-        elif option == str_clean_files:
+        elif option == STR_CLEAN_FILES:
             self.clean_files()
 
         self.file_menu()
