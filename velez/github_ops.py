@@ -6,33 +6,33 @@ from datetime import datetime
 import github
 from pick import pick
 from velez.file_ops import FileOperations
-from velez.utils import str_back, str_exit, run_command
+from velez.utils import STR_BACK, STR_EXIT, run_command
 
-STALE_BRANCHES_DAYS = int(os.getenv('VELEZ_GH_STALE_BRANCHES_DAYS', 45))
-STALE_BRANCHES_COMMITS = int(os.getenv('VELEZ_GH_STALE_BRANCHES_COMMITS', 30))
+STALE_BRANCHES_DAYS = int(os.getenv('GITHUB_STALE_BRANCHES_DAYS', 45))
+STALE_BRANCHES_COMMITS = int(os.getenv('GITHUB_STALE_BRANCHES_COMMITS', 30))
 
-str_commit = "→ Commit"
-str_amend = "⇢ Amend commit"
-str_push = "⇧ Push"
-str_push_force = "⇪ Force push"
-str_update = "↓ Pull menu"
-str_branches = "⌥ Branches menu"
-str_pull_requests = "⌲ Pull Requests menu"
-str_issues = "⌳ Issues menu"
-str_rebase = "⇲ Rebase"
-str_pull = "↘︎ Pull"
-str_new_branch = "✦ Create new branch"
-str_select_local_branch = "☞ Select local branch"
-str_select_remote_branch = "☛ Select remote branch"
-str_delete_local_branch = "⌫ Delete local branch"
-str_delete_remote_branch = "⌦ Delete remote branch"
-str_create_pr = "✯ Create pull request"
-str_list_pr_repo = "⎗ List PRs in the repository"
-str_list_pr_org = "⎘ List PRs for the whole organization"
-str_create_issue = "✶ Create new issue"
-str_list_issues_repo = "⎗ List issues in the repository"
-str_list_issues_org = "⎘ List issues for the whole organization"
-str_delete_stale_branches = "⌦ Delete stale branches"
+STR_COMMIT = "→ Commit"
+STR_AMEND = "⇢ Amend commit"
+STR_PUSH = "⇧ Push"
+STR_PUSH_FORCE = "⇪ Force push"
+STR_UPDATE = "↓ Pull menu"
+STR_BRANCHES = "⌥ Branches menu"
+STR_PULL_REQUESTS = "⌲ Pull Requests menu"
+STR_ISSUES = "⌳ Issues menu"
+STR_REBASE = "⇲ Rebase"
+STR_PULL = "↘︎ Pull"
+STR_NEW_BRANCH = "✦ Create new branch"
+STR_SELECT_LOCAL_BRANCH = "☞ Select local branch"
+STR_SELECT_REMOTE_BRANCH = "☛ Select remote branch"
+STR_DELETE_LOCAL_BRANCH = "⌫ Delete local branch"
+STR_DELETE_REMOTE_BRANCH = "⌦ Delete remote branch"
+STR_CREATE_PR = "✯ Create pull request"
+STR_LIST_PR_REPO = "⎗ List PRs in the repository"
+STR_LIST_PR_ORG = "⎘ List PRs for the whole organization"
+STR_CREATE_ISSUE = "✶ Create new issue"
+STR_LIST_ISSUES_REPO = "⎗ List issues in the repository"
+STR_LIST_ISSUES_ORG = "⎘ List issues for the whole organization"
+STR_DELETE_STALE_BRANCHES = "⌦ Delete stale branches"
 
 
 class GitHubOperations:
@@ -69,38 +69,38 @@ class GitHubOperations:
         """
         title = f"Current branch: {self.branch}. Choose a GitHub operation:"
         options = [
-            str_commit,
-            str_amend,
-            str_push,
-            str_push_force,
-            str_update,
-            str_branches,
-            str_pull_requests,
-            str_issues,
-            str_back,
-            str_exit
+            STR_COMMIT,
+            STR_AMEND,
+            STR_PUSH,
+            STR_PUSH_FORCE,
+            STR_UPDATE,
+            STR_BRANCHES,
+            STR_PULL_REQUESTS,
+            STR_ISSUES,
+            STR_BACK,
+            STR_EXIT
         ]
         option, index = pick(options, title)
 
-        if option == str_commit:
+        if option == STR_COMMIT:
             self.commit(amend=False)
-        elif option == str_amend:
+        elif option == STR_AMEND:
             self.commit(amend=True)
-        elif option == str_push:
+        elif option == STR_PUSH:
             self.push(force=False)
-        elif option == str_push_force:
+        elif option == STR_PUSH_FORCE:
             self.push(force=True)
-        elif option == str_update:
+        elif option == STR_UPDATE:
             self.update_menu()
-        elif option == str_branches:
+        elif option == STR_BRANCHES:
             self.branches_menu()
-        elif option == str_pull_requests:
+        elif option == STR_PULL_REQUESTS:
             self.pull_request_menu()
-        elif option == str_issues:
+        elif option == STR_ISSUES:
             self.issues_menu()
-        elif option == str_back:
+        elif option == STR_BACK:
             self.velez.main_menu()
-        elif option == str_exit:
+        elif option == STR_EXIT:
             sys.exit()
 
         self.github_menu()
@@ -147,20 +147,20 @@ class GitHubOperations:
         """
         title = f"Current branch: {self.branch}. Choose an update operation:"
         options = [
-            str_rebase,
-            str_pull,
-            str_back,
-            str_exit
+            STR_REBASE,
+            STR_PULL,
+            STR_BACK,
+            STR_EXIT
         ]
         option, index = pick(options, title)
 
-        if option == str_rebase:
+        if option == STR_REBASE:
             run_command(['git', 'pull', '--rebase'])
-        elif option == str_pull:
+        elif option == STR_PULL:
             run_command(['git', 'pull'])
-        elif option == str_back:
+        elif option == STR_BACK:
             self.github_menu()
-        elif option == str_exit:
+        elif option == STR_EXIT:
             sys.exit()
 
         self.update_menu()
@@ -172,32 +172,32 @@ class GitHubOperations:
         """
         title = f"Current branch: {self.branch}. Choose a branch operation:"
         options = [
-            str_new_branch,
-            str_select_local_branch,
-            str_select_remote_branch,
-            str_delete_local_branch,
-            str_delete_remote_branch,
-            str_delete_stale_branches,
-            str_back,
-            str_exit
+            STR_NEW_BRANCH,
+            STR_SELECT_LOCAL_BRANCH,
+            STR_SELECT_REMOTE_BRANCH,
+            STR_DELETE_LOCAL_BRANCH,
+            STR_DELETE_REMOTE_BRANCH,
+            STR_DELETE_STALE_BRANCHES,
+            STR_BACK,
+            STR_EXIT
         ]
         option, index = pick(options, title)
 
-        if option == str_new_branch:
+        if option == STR_NEW_BRANCH:
             self.create_local_branch()
-        elif option == str_select_local_branch:
+        elif option == STR_SELECT_LOCAL_BRANCH:
             self.select_local_branch()
-        elif option == str_select_remote_branch:
+        elif option == STR_SELECT_REMOTE_BRANCH:
             self.select_remote_branch()
-        elif option == str_delete_local_branch:
+        elif option == STR_DELETE_LOCAL_BRANCH:
             self.delete_local_branch()
-        elif option == str_delete_remote_branch:
+        elif option == STR_DELETE_REMOTE_BRANCH:
             self.delete_remote_branch()
-        elif option == str_delete_stale_branches:
+        elif option == STR_DELETE_STALE_BRANCHES:
             self.delete_stale_branches()
-        elif option == str_back:
+        elif option == STR_BACK:
             self.github_menu()
-        elif option == str_exit:
+        elif option == STR_EXIT:
             sys.exit()
 
         self.branches_menu()
@@ -219,12 +219,12 @@ class GitHubOperations:
         run_command(['git', 'fetch', '--all'])
         branches = run_command(['git', 'branch', '--all'])[0].split('\n')
         branches = [re.sub(r'^\* ', '', branch.strip()) for branch in branches if branch]
-        branches += [str_back, str_exit]
+        branches += [STR_BACK, STR_EXIT]
         title = f"Current branch: {self.branch}. Select a local branch:"
         option, index = pick(branches, title)
-        if option == str_back:
+        if option == STR_BACK:
             self.branches_menu()
-        elif option == str_exit:
+        elif option == STR_EXIT:
             sys.exit()
         else:
             self.branch = option
@@ -239,12 +239,12 @@ class GitHubOperations:
         run_command(['git', 'fetch', '--all'])
         branches = run_command(['git', 'branch', '--remote'])[0].split('\n')
         branches = [branch.strip() for branch in branches if branch]
-        branches += [str_back, str_exit]
+        branches += [STR_BACK, STR_EXIT]
         title = f"Current branch: {self.branch}. Select a remote branch:"
         option, index = pick(branches, title)
-        if option == str_back:
+        if option == STR_BACK:
             self.branches_menu()
-        elif option == str_exit:
+        elif option == STR_EXIT:
             sys.exit()
         else:
             run_command(['git', 'checkout', option])
@@ -259,12 +259,12 @@ class GitHubOperations:
         run_command(['git', 'fetch', '--prune'])
         branches = run_command(['git', 'branch'])[0].split('\n')
         branches = [branch.strip() for branch in branches if branch]
-        branches += [str_back, str_exit]
+        branches += [STR_BACK, STR_EXIT]
         title = f"Current branch: {self.branch}. Select a local branch to delete:"
         option, index = pick(branches, title)
-        if option == str_back:
+        if option == STR_BACK:
             self.branches_menu()
-        elif option == str_exit:
+        elif option == STR_EXIT:
             sys.exit()
         else:
             run_command(['git', 'branch', '--delete', option])
@@ -278,12 +278,12 @@ class GitHubOperations:
         run_command(['git', 'fetch', '--prune'])
         branches = run_command(['git', 'branch', '--remote'])[0].split('\n')
         branches = [re.sub(r'^origin/', '', branch.strip()) for branch in branches if branch]
-        branches += [str_back, str_exit]
+        branches += [STR_BACK, STR_EXIT]
         title = f"Current branch: {self.branch}. Select a remote branch to delete:"
         option, index = pick(branches, title)
-        if option == str_back:
+        if option == STR_BACK:
             self.branches_menu()
-        elif option == str_exit:
+        elif option == STR_EXIT:
             sys.exit()
         else:
             run_command(['git', 'push', 'origin', '--delete', option])
@@ -296,23 +296,23 @@ class GitHubOperations:
         """
         title = "Choose a pull request operation:"
         options = [
-            str_create_pr,
-            str_list_pr_repo,
-            str_list_pr_org,
-            str_back,
-            str_exit
+            STR_CREATE_PR,
+            STR_LIST_PR_REPO,
+            STR_LIST_PR_ORG,
+            STR_BACK,
+            STR_EXIT
         ]
         option, index = pick(options, title)
 
-        if option == str_create_pr:
+        if option == STR_CREATE_PR:
             self.create_pull_request()
-        elif option == str_list_pr_repo:
+        elif option == STR_LIST_PR_REPO:
             self.list_open_pull_requests(repo_only=True)
-        elif option == str_list_pr_org:
+        elif option == STR_LIST_PR_ORG:
             self.list_open_pull_requests(repo_only=False)
-        elif option == str_back:
+        elif option == STR_BACK:
             self.github_menu()
-        elif option == str_exit:
+        elif option == STR_EXIT:
             sys.exit()
 
         self.pull_request_menu()
@@ -356,23 +356,23 @@ class GitHubOperations:
         """
         title = "Choose an issue operation:"
         options = [
-            str_create_issue,
-            str_list_issues_repo,
-            str_list_issues_org,
-            str_back,
-            str_exit
+            STR_CREATE_ISSUE,
+            STR_LIST_ISSUES_REPO,
+            STR_LIST_ISSUES_ORG,
+            STR_BACK,
+            STR_EXIT
         ]
         option, index = pick(options, title)
 
-        if option == str_create_issue:
+        if option == STR_CREATE_ISSUE:
             self.create_issue()
-        elif option == str_list_issues_repo:
+        elif option == STR_LIST_ISSUES_REPO:
             self.list_open_issues(repo_only=True)
-        elif option == str_list_issues_org:
+        elif option == STR_LIST_ISSUES_ORG:
             self.list_open_issues(repo_only=False)
-        elif option == str_back:
+        elif option == STR_BACK:
             self.github_menu()
-        elif option == str_exit:
+        elif option == STR_EXIT:
             sys.exit()
 
         self.issues_menu()
@@ -443,10 +443,10 @@ class GitHubOperations:
             return
 
         title = f"Current branch: {self.branch}. Select a stale branch to delete:"
-        option, index = pick(stale_branches + [str_back, str_exit], title)
-        if option == str_back:
+        option, index = pick(stale_branches + [STR_BACK, STR_EXIT], title)
+        if option == STR_BACK:
             self.branches_menu()
-        elif option == str_exit:
+        elif option == STR_EXIT:
             sys.exit()
         else:
             run_command(['git', 'push', 'origin', '--delete', option])
