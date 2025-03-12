@@ -14,28 +14,26 @@ files before committing!
   />
 </a>
 
-
-## Advantages
-
-- Terragrunt **backend configuration** is read by invoking `terragrunt` command, so it is **always up to date** and resembles the 
-  **real state of the infrastructure**, not just hardcoded values in the code.
-- All operations are performed in the **context of the current directory**, so you don't have to worry about running
-  commands in the wrong environment.
-
-
 ## Disclaimer
 
-**This project is in the early development stage and is not ready for production use. And if version is below `1.x.x`, 
-it is not recommended to use it in production. It is not a stable release and should be considered as an alpha version.
+**This project is in the early development stage and is not ready for production use. It is a work in progress and may
+contain bugs, incomplete features, incorrect documentation, backward incompatible changes or other issues.
 
-It is a work in progress and may  contain bugs, incomplete features, incorrect documentation, backward incompatible 
-changes or other issues. Use it at your own risk before it reaches 1.x.x version. Read the documentation carefully and 
-test it in a safe environment before using it.**
+Use it at your own risk before it reaches 1.x.x version. Read the documentation carefully and test it in a 
+safe environment before using it.**
 
 Since it operates on the infrastructure, user is responsible for the consequences of the actions taken by the tool and
 should review the code before using it.
 
 ![Velez](img/velez.jpg)
+
+
+## Advantages
+
+- Terragrunt **backend configuration** is read by invoking `terragrunt` command, so it is **always up to date** and resembles the
+  **real state of the infrastructure**, not just hardcoded values in the code.
+- All operations are performed in the **context of the current directory**, so you don't have to worry about running
+  commands in the wrong environment.
 
 
 ## Features
