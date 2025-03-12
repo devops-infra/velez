@@ -4,35 +4,34 @@ import sys
 
 import boto3
 from pick import pick
-from velez.file_ops import FileOperations
-from velez.utils import run_command, str_back, str_exit
+from velez.file_ops import FileOperations, STR_CLEAN_FILES
+from velez.utils import run_command, STR_BACK, STR_EXIT
 
-str_plan = "▷ Plan"
-str_apply = "▶︎ Apply"
-str_import = "◁ Import"
-str_destroy = "⌧ Destroy"
-str_output = "✉︎ Output"
-str_init = "✦ Initialize"
-str_validate = "☑ Validate"
-str_refresh = "♻ Refresh"
-str_state_menu = "⌖ State operations"
-str_state_list = "⌸ List"
-str_state_move = "↔ Move"
-str_state_rm = "⌧ Remove"
-str_state_show = "⎚ Show"
-str_state_pull = "↓ Pull"
-str_state_push = "↑ Push"
-str_module_menu = "⎄ Module operations"
-str_module_move = "↔ Move module"
-str_module_destroy = "⌧ Destroy module"
-str_module_destroy_backend = "⌧ Destroy backend"
-str_taint_menu = "☣︎ Taint operations"
-str_taint = "☣ Taint"
-str_untaint = "♺️ Untaint"
-str_lock_menu = "⎉ Lock operations"
-str_lock_info = "ℹ Lock info"
-str_unlock = "⇭ Unlock"
-str_clean_files = "⌧ Clean temporary files"
+STR_PLAN = "▷ Plan"
+STR_APPLY = "▶︎ Apply"
+STR_IMPORT = "◁ Import"
+STR_DESTROY = "⌧ Destroy"
+STR_OUTPUT = "✉︎ Output"
+STR_INIT = "✦ Initialize"
+STR_VALIDATE = "☑ Validate"
+STR_REFRESH = "♻ Refresh"
+STR_STATE_MENU = "⌖ State operations"
+STR_STATE_LIST = "⌸ List"
+STR_STATE_MOVE = "↔ Move"
+STR_STATE_RM = "⌧ Remove"
+STR_STATE_SHOW = "⎚ Show"
+STR_STATE_PULL = "↓ Pull"
+STR_STATE_PUSH = "↑ Push"
+STR_MODULE_MENU = "⎄ Module operations"
+STR_MODULE_MOVE = "↔ Move module"
+STR_MODULE_DESTROY = "⌧ Destroy module"
+STR_MODULE_DESTROY_BACKEND = "⌧ Destroy backend"
+STR_TAINT_MENU = "☣︎ Taint operations"
+STR_TAINT = "☣ Taint"
+STR_UNTAINT = "♺️ Untaint"
+STR_LOCK_MENU = "⎉ Lock operations"
+STR_LOCK_INFO = "ℹ Lock info"
+STR_UNLOCK = "⇭ Unlock"
 
 
 class TerragruntOperations:
@@ -184,18 +183,18 @@ class TerragruntOperations:
                 options.append(f"🌟 {os.path.basename(folder)}")
             else:
                 options.append(f"📁 {os.path.basename(folder)}")
-        options += [str_back, str_exit]
+        options += [STR_BACK, STR_EXIT]
 
         title = f"Current Directory: {os.path.relpath(current_dir, self.velez.base_dir)}. Choose a folder to explore:"
         option, index = pick(options, title)
 
-        if option == str_back:
+        if option == STR_BACK:
             if current_dir == self.velez.base_dir:
                 self.velez.main_menu()
             else:
                 parent_dir = os.path.dirname(current_dir)
                 self.folder_menu(parent_dir)
-        elif option == str_exit:
+        elif option == STR_EXIT:
             sys.exit()
         else:
             selected_folder = folders[index]
@@ -212,70 +211,70 @@ class TerragruntOperations:
         :return: None
         """
         options = [
-            str_plan,
-            str_apply,
-            str_import,
-            str_destroy,
-            str_output,
-            str_init,
-            str_validate,
-            str_refresh,
-            str_taint_menu,
-            str_clean_files,
+            STR_PLAN,
+            STR_APPLY,
+            STR_IMPORT,
+            STR_DESTROY,
+            STR_OUTPUT,
+            STR_INIT,
+            STR_VALIDATE,
+            STR_REFRESH,
+            STR_TAINT_MENU,
+            STR_CLEAN_FILES,
         ]
         if self.velez.use_s3_backend and self.velez.use_dynamodb_locks:
             options += [
-                str_state_menu,
-                str_module_menu,
-                str_lock_menu,
+                STR_STATE_MENU,
+                STR_MODULE_MENU,
+                STR_LOCK_MENU,
             ]
         options += [
-            str_back,
-            str_exit
+            STR_BACK,
+            STR_EXIT
         ]
         title = f"Current Module: {self.module}. Choose an action:"
         option, index = pick(options, title)
 
-        if option == str_back:
+        if option == STR_BACK:
             self.folder_menu(os.path.dirname(self.module))
-        elif option == str_exit:
+        elif option == STR_EXIT:
             sys.exit()
-        elif option == str_plan:
+        elif option == STR_PLAN:
             self.plan_action()
             self.action_menu()
-        elif option == str_apply:
+        elif option == STR_APPLY:
             self.apply_action()
             self.action_menu()
-        elif option == str_import:
+        elif option == STR_IMPORT:
             self.import_action()
             self.action_menu()
-        elif option == str_destroy:
+        elif option == STR_DESTROY:
             self.destroy_action()
             self.action_menu()
-        elif option == str_output:
+        elif option == STR_OUTPUT:
             self.output_action()
             self.action_menu()
-        elif option == str_init:
+        elif option == STR_INIT:
             self.init_action()
             self.action_menu()
-        elif option == str_validate:
+        elif option == STR_VALIDATE:
             self.validate_action()
             self.action_menu()
-        elif option == str_refresh:
+        elif option == STR_REFRESH:
             self.refresh_action()
             self.action_menu()
-        elif option == str_clean_files:
+        elif option == STR_CLEAN_FILES:
             if self.velez.file_ops is None:
                 self.velez.file_ops = FileOperations(self.velez)
             self.velez.file_ops.clean_files()
             self.action_menu()
-        elif option == str_state_menu:
+        elif option == STR_STATE_MENU:
             self.state_menu()
-        elif option == str_module_menu:
+        elif option == STR_MODULE_MENU:
             self.module_menu()
-        elif option == str_taint_menu:
+        elif option == STR_TAINT_MENU:
             self.taint_menu()
-        elif option == str_lock_menu:
+        elif option == STR_LOCK_MENU:
             self.lock_menu()
 
     def plan_action(self) -> None:
@@ -357,43 +356,43 @@ class TerragruntOperations:
         :return: None
         """
         state_options = [
-            str_state_list,
-            str_state_move,
-            str_state_rm,
-            str_state_show,
-            str_state_pull,
-            str_state_push,
-            str_back,
-            str_exit
+            STR_STATE_LIST,
+            STR_STATE_MOVE,
+            STR_STATE_RM,
+            STR_STATE_SHOW,
+            STR_STATE_PULL,
+            STR_STATE_PUSH,
+            STR_BACK,
+            STR_EXIT
         ]
         state_title = f"Current Module: {self.module}. Choose a state operation:"
         state_option, state_index = pick(state_options, state_title)
-        if state_option == str_back:
+        if state_option == STR_BACK:
             self.action_menu()
-        elif state_option == str_exit:
+        elif state_option == STR_EXIT:
             sys.exit()
-        elif state_option == str_state_list:
+        elif state_option == STR_STATE_LIST:
             resource = input("Enter the address of the resource to list (e.g., module.example): ")
             self.run_terragrunt(['run', 'state', 'list', resource])
             self.action_menu()
-        elif state_option == str_state_move:
+        elif state_option == STR_STATE_MOVE:
             source = input("Enter the source address of the resource to move (e.g., module.one.aws_instance.this): ")
             destination = input(
                 "Enter the destination address of the resource to move (e.g., module.two.aws_instance.this): ")
             self.run_terragrunt(['run', 'state', 'mv', source, destination])
             self.action_menu()
-        elif state_option == str_state_rm:
+        elif state_option == STR_STATE_RM:
             resource = input("Enter the address of the resource to remove (e.g., aws_instance.example): ")
             self.run_terragrunt(['run', 'state', 'rm', resource])
             self.action_menu()
-        elif state_option == str_state_show:
+        elif state_option == STR_STATE_SHOW:
             resource = input("Enter the address of the resource to show (e.g., aws_instance.example): ")
             self.run_terragrunt(['run', 'state', 'show', resource])
             self.action_menu()
-        elif state_option == str_state_pull:
+        elif state_option == STR_STATE_PULL:
             self.run_terragrunt(['run', 'state', 'pull'])
             self.action_menu()
-        elif state_option == str_state_push:
+        elif state_option == STR_STATE_PUSH:
             self.run_terragrunt(['run', 'state', 'push'])
             self.action_menu()
 
@@ -403,24 +402,24 @@ class TerragruntOperations:
         :return: None
         """
         module_options = [
-            str_module_move if self.velez.use_s3_backend and self.velez.use_dynamodb_locks else None,
-            str_module_destroy if self.velez.use_s3_backend and self.velez.use_dynamodb_locks else None,
-            str_module_destroy_backend if self.velez.use_s3_backend and self.velez.use_dynamodb_locks else None,
-            str_back,
-            str_exit
+            STR_MODULE_MOVE if self.velez.use_s3_backend and self.velez.use_dynamodb_locks else None,
+            STR_MODULE_DESTROY if self.velez.use_s3_backend and self.velez.use_dynamodb_locks else None,
+            STR_MODULE_DESTROY_BACKEND if self.velez.use_s3_backend and self.velez.use_dynamodb_locks else None,
+            STR_BACK,
+            STR_EXIT
         ]
         module_options = [i for i in module_options if i is not None or i != '']
         module_title = f"Current Module: {self.module}. Choose a module operation:"
         module_option, module_index = pick(module_options, module_title)
-        if module_option == str_back:
+        if module_option == STR_BACK:
             self.action_menu()
-        elif module_option == str_exit:
+        elif module_option == STR_EXIT:
             sys.exit()
-        elif module_option == str_module_move:
+        elif module_option == STR_MODULE_MOVE:
             self.module_move_action()
-        elif module_option == str_module_destroy:
+        elif module_option == STR_MODULE_DESTROY:
             self.module_destroy_action()
-        elif module_option == str_module_destroy_backend:
+        elif module_option == STR_MODULE_DESTROY_BACKEND:
             self.module_destroy_backend_action()
 
     def taint_menu(self) -> None:
@@ -429,20 +428,20 @@ class TerragruntOperations:
         :return: None
         """
         taint_options = [
-            str_untaint,
-            str_taint,
-            str_back,
-            str_exit
+            STR_UNTAINT,
+            STR_TAINT,
+            STR_BACK,
+            STR_EXIT
         ]
         taint_title = f"Current Module: {self.module}. Choose a taint operation"
         taint_option, taint_index = pick(taint_options, taint_title)
-        if taint_option == str_back:
+        if taint_option == STR_BACK:
             self.action_menu()
-        elif taint_option == str_exit:
+        elif taint_option == STR_EXIT:
             sys.exit()
-        elif taint_option == str_taint:
+        elif taint_option == STR_TAINT:
             self.taint_action()
-        elif taint_option == str_untaint:
+        elif taint_option == STR_UNTAINT:
             self.untaint_action()
 
     def lock_menu(self) -> None:
@@ -451,20 +450,20 @@ class TerragruntOperations:
         :return: None
         """
         lock_options = [
-            str_lock_info,
-            str_unlock,
-            str_back,
-            str_exit
+            STR_LOCK_INFO,
+            STR_UNLOCK,
+            STR_BACK,
+            STR_EXIT
         ]
         lock_title = f"Current Module: {self.module}. Choose a lock operation:"
         lock_option, lock_index = pick(lock_options, lock_title)
-        if lock_option == str_back:
+        if lock_option == STR_BACK:
             self.action_menu()
-        elif lock_option == str_exit:
+        elif lock_option == STR_EXIT:
             sys.exit()
-        elif lock_option == str_unlock:
+        elif lock_option == STR_UNLOCK:
             self.unlock_action()
-        elif lock_option == str_lock_info:
+        elif lock_option == STR_LOCK_INFO:
             self.lock_info_action()
 
     def module_move_action(self) -> None:

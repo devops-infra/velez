@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "velez"
+version = "0.3.0"
+description = "∀elez is a tool to easily manage complex Terragrunt configurations."
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "pick",
+    "boto3",
+    "python-hcl2",
+    "PyGithub",
+]
+authors = [
+    {name = "Krzysztof Szyper", email = "christoph@shyper.pro"}
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: System Administrators",
+    "Topic :: Utilities",
+]
+
+[project.scripts]
+velez = "velez.velez:main"
+
+[project.urls]
+"Homepage" = "https://github.com/devops-infra/velez"
+"Issues" = "https://github.com/devops-infra/velez/issues"
+
+[tool.setuptools]
+packages = ["velez"]
