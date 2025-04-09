@@ -180,7 +180,7 @@ def main() -> None:
     args = parser.parse_args()
 
     if args.version:
-        print(f"∀elez version: {version("velez")}")
+        print(f"∀elez version: {version('velez')}")
         sys.exit()
 
     framework = Velez()

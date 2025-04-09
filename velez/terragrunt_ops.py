@@ -222,7 +222,7 @@ class TerragruntOperations:
             STR_TAINT_MENU,
             STR_CLEAN_FILES,
         ]
-        if self.velez.use_s3_backend and self.velez.use_dynamodb_locks:
+        if self.use_s3_backend and self.use_dynamodb_locks:
             options += [
                 STR_STATE_MENU,
                 STR_MODULE_MENU,
@@ -402,9 +402,9 @@ class TerragruntOperations:
         :return: None
         """
         module_options = [
-            STR_MODULE_MOVE if self.velez.use_s3_backend and self.velez.use_dynamodb_locks else None,
-            STR_MODULE_DESTROY if self.velez.use_s3_backend and self.velez.use_dynamodb_locks else None,
-            STR_MODULE_DESTROY_BACKEND if self.velez.use_s3_backend and self.velez.use_dynamodb_locks else None,
+            STR_MODULE_MOVE if self.use_s3_backend and self.use_dynamodb_locks else None,
+            STR_MODULE_DESTROY if self.use_s3_backend and self.use_dynamodb_locks else None,
+            STR_MODULE_DESTROY_BACKEND if self.use_s3_backend and self.use_dynamodb_locks else None,
             STR_BACK,
             STR_EXIT
         ]
@@ -473,12 +473,12 @@ class TerragruntOperations:
         """
         destination = input("Enter the destination path (e.g., aws/prod): ")
 
-        if self.velez.use_dynamodb_locks and self.velez.use_s3_backend:
-            print("Using DynamoDB lock table: ", self.velez.dynamodb_table)
-            print("Using DynamoDB LockID: ", self.velez.dynamodb_lockid)
-            print("Using S3 source path: ", self.velez.s3_state_path)
-            destination_key = f'{self.velez.s3_state_key.replace(self.module, destination)}'
-            s3_destination = f's3://{self.velez.s3_bucket_name}/{destination_key}'
+        if self.use_dynamodb_locks and self.use_s3_backend:
+            print("Using DynamoDB lock table: ", self.dynamodb_table)
+            print("Using DynamoDB LockID: ", self.dynamodb_lockid)
+            print("Using S3 source path: ", self.s3_state_path)
+            destination_key = f'{self.s3_state_key.replace(self.module, destination)}'
+            s3_destination = f's3://{self.s3_bucket_name}/{destination_key}'
             print("Using S3 destination path: ", s3_destination)
         else:
             print("DynamoDB Locks and S3 Backend are not enabled.")
@@ -492,13 +492,13 @@ class TerragruntOperations:
             if os.path.isfile(full_file_name):
                 os.rename(full_file_name, os.path.join(destination, file_name))
 
-        if self.velez.use_dynamodb_locks:
+        if self.use_dynamodb_locks:
             self.dynamodb_delete_lock()
 
         print("Moving state files on S3...")
         try:
             s3 = boto3.client('s3')
-            s3_source_bucket, s3_source_prefix = self.velez.s3_state_path.replace("s3://", "").split("/", 1)
+            s3_source_bucket, s3_source_prefix = self.s3_state_path.replace("s3://", "").split("/", 1)
             s3_destination_bucket, s3_destination_prefix = s3_destination.replace("s3://", "").split("/", 1)
 
             paginator = s3.get_paginator('list_objects_v2')
@@ -523,10 +523,10 @@ class TerragruntOperations:
         Destroy Terragrunt module action.
         :return: None
         """
-        if self.velez.use_dynamodb_locks and self.velez.use_s3_backend:
-            print("Using DynamoDB lock table: ", self.velez.dynamodb_table)
-            print("Using DynamoDB LockID: ", self.velez.dynamodb_lockid)
-            print("Using S3 path: ", self.velez.s3_state_path)
+        if self.use_dynamodb_locks and self.use_s3_backend:
+            print("Using DynamoDB lock table: ", self.dynamodb_table)
+            print("Using DynamoDB LockID: ", self.dynamodb_lockid)
+            print("Using S3 path: ", self.s3_state_path)
         else:
             print("DynamoDB Locks and S3 Backend are not enabled.")
             input("Press Enter to return to previous menu...")
@@ -550,10 +550,10 @@ class TerragruntOperations:
         Destroy Terragrunt module backend action.
         :return: None
         """
-        if self.velez.use_dynamodb_locks and self.velez.use_s3_backend:
-            print("Using DynamoDB lock table: ", self.velez.dynamodb_table)
-            print("Using DynamoDB LockID: ", self.velez.dynamodb_lockid)
-            s3_state = f"s3://{self.velez.s3_bucket_name}/{self.velez.s3_state_key}"
+        if self.use_dynamodb_locks and self.use_s3_backend:
+            print("Using DynamoDB lock table: ", self.dynamodb_table)
+            print("Using DynamoDB LockID: ", self.dynamodb_lockid)
+            s3_state = f"s3://{self.s3_bucket_name}/{self.s3_state_key}"
             print("Using S3 path: ", s3_state)
         else:
             print("DynamoDB Locks and S3 Backend are not enabled.")
@@ -573,8 +573,8 @@ class TerragruntOperations:
         try:
             dynamodb = boto3.client('dynamodb')
             dynamodb.delete_item(
-                TableName=self.velez.dynamodb_name,
-                Key={'LockID': {'S': self.velez.dynamodb_lockid}}
+                TableName=self.dynamodb_name,
+                Key={'LockID': {'S': self.dynamodb_lockid}}
             )
         except Exception as e:
             print(f"An error occurred: {e}")
@@ -588,8 +588,8 @@ class TerragruntOperations:
         try:
             dynamodb = boto3.client('dynamodb')
             response = dynamodb.get_item(
-                TableName=self.velez.dynamodb_name,
-                Key={'LockID': {'S': self.velez.dynamodb_lockid}}
+                TableName=self.dynamodb_name,
+                Key={'LockID': {'S': self.dynamodb_lockid}}
             )
             print(response)
         except Exception as e:
@@ -603,7 +603,7 @@ class TerragruntOperations:
         print("Deleting state file on S3...")
         try:
             s3 = boto3.client('s3')
-            s3.delete_object(Bucket=self.velez.s3_bucket_name, Key=self.velez.s3_state_key)
+            s3.delete_object(Bucket=self.s3_bucket_name, Key=self.s3_state_key)
         except Exception as e:
             print(f"An error occurred: {e}")
 
@@ -652,7 +652,7 @@ class TerragruntOperations:
         # Building the full command
         command = ['terragrunt'] + args
         # check if cli-redesign is possible
-        if self.velez.terragrunt_version >= '0.73.0':
+        if self.terragrunt_version >= '0.73.0':
             if 'run' in args:
                 command += ['--tf-forward-stdout', '--experiment', 'cli-redesign']
         if self.module:
@@ -666,10 +666,10 @@ class TerragruntOperations:
         Load Terragrunt module configuration from running Terragrunt.
         :return: dict
         """
-        run_command(['terragrunt', 'render-json', '--out', self.velez.temp_config], quiet=True)
+        self.run_terragrunt(['render-json', '--out', self.temp_config], quiet=True)
         if self.velez.file_ops is None:
             self.velez.file_ops = FileOperations(self.velez)
-        return self.velez.file_ops.load_json_file(self.velez.temp_config)
+        return self.velez.file_ops.load_json_file(self.temp_config)
 
     def update_self(self, module_path: str) -> None:
         """
@@ -682,16 +682,16 @@ class TerragruntOperations:
         if 'remote_state' in config:
             remote_state = config['remote_state']
             if remote_state['backend'] == 's3':
-                self.velez.use_s3_backend = True
+                self.use_s3_backend = True
                 if 'config' in remote_state:
                     config = remote_state['config']
                     if 'dynamodb_table' in config:
-                        self.velez.use_dynamodb_locks = True
-                        self.velez.dynamodb_table = config['dynamodb_table']
+                        self.use_dynamodb_locks = True
+                        self.dynamodb_table = config['dynamodb_table']
                     if 'bucket' in config:
-                        self.velez.s3_bucket_name = config['bucket']
+                        self.s3_bucket_name = config['bucket']
                     if 'key' in config:
-                        self.velez.s3_state_key = config['key']
-                    if self.velez.dynamodb_table and self.velez.s3_bucket_name and self.velez.s3_state_key:
-                        self.velez.dynamodb_lockid = f"{self.velez.s3_bucket_name}/{self.velez.s3_state_key}-md5"
-                        self.velez.s3_state_path = f"s3://{self.velez.s3_bucket_name}/{self.velez.s3_state_key}"
+                        self.s3_state_key = config['key']
+                    if self.dynamodb_table and self.s3_bucket_name and self.s3_state_key:
+                        self.dynamodb_lockid = f"{self.s3_bucket_name}/{self.s3_state_key}-md5"
+                        self.s3_state_path = f"s3://{self.s3_bucket_name}/{self.s3_state_key}"

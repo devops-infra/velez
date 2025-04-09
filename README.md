@@ -1,6 +1,6 @@
 # Velez
 
-DevOps/CloudOps CLI framework for making work with Terragrunt and performing various cloud operations much easier.
+DevOps/CloudOps CLI framework for making work with Terragrunt and performing various cloud operations much easier and faster.
 
 Do you want to automate your daily tasks with Terragrunt, Terraform, GitHub, and other tools? Velez is here to help you!
 
