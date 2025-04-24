@@ -1,7 +1,7 @@
 pick==2.4.0
 setuptools==79.0.0
 boto3==1.37.38
-python-hcl2==7.1.0
+python-hcl2==7.2.0
 PyGithub==2.6.1
 pytest==8.3.5
 build==1.2.2
