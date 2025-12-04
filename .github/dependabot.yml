@@ -6,7 +6,7 @@ updates:
     directory: "/"
     target-branch: master
     schedule:
-      interval: daily
+      interval: weekly
     assignees:
       - ChristophShyper
     labels:
@@ -18,7 +18,7 @@ updates:
     directory: "/"
     target-branch: master
     schedule:
-      interval: daily
+      interval: weekly
     assignees:
       - ChristophShyper
     labels:
