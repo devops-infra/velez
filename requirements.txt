@@ -4,4 +4,4 @@ boto3==1.42.21
 python-hcl2==7.3.1
 PyGithub==2.8.1
 pytest==9.0.2
-build==1.3.0
+build==1.4.0
