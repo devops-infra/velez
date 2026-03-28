@@ -26,6 +26,7 @@ on:
 permissions:
   contents: write
   packages: write
+  pull-requests: write
 
 jobs:
   call:
@@ -35,3 +36,4 @@ jobs:
       explicit-version: ${{ inputs.version }}
       build-and-push-only: ${{ inputs.build_only }}
       profile: other
+    secrets: inherit

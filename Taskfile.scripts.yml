@@ -48,22 +48,23 @@ tasks:
 
   lint:shellcheck:
     desc: Lint shell scripts with shellcheck
+    shell: bash
     cmds:
       - |
         echo "▶️ Running shellcheck..."
-        files=$(git ls-files '*.sh')
-        existing_files=""
-        for f in $files; do
+        mapfile -t files < <(git ls-files '*.sh')
+        existing_files=()
+        for f in "${files[@]}"; do
           if [ -f "$f" ]; then
-            existing_files="$existing_files $f"
+            existing_files+=("$f")
           fi
         done
-        if [ -z "$existing_files" ]; then
+        if [ "${#existing_files[@]}" -eq 0 ]; then
           echo "ℹ️ No shell scripts found, skipping shellcheck"
           exit 0
         fi
         set +e
-        docker run --rm -i -v "$PWD:/work" -w /work koalaman/shellcheck:stable -x -S style $existing_files
+        docker run --rm -i -v "$PWD:/work" -w /work koalaman/shellcheck:stable -x -S style -- "${existing_files[@]}"
         rc=$?
         set -e
         if [ "$rc" -eq 0 ]; then
@@ -112,6 +113,10 @@ tasks:
       - |
         if [ -z "{{.VERSION}}" ]; then
           echo "❌ ERROR: VERSION is empty"
+          exit 1
+        fi
+        if ! echo "{{.VERSION}}" | grep -Eq '^v?[0-9]+\.[0-9]+\.[0-9]+$'; then
+          echo "❌ ERROR: VERSION '{{.VERSION}}' is not a valid semantic version (expected vX.Y.Z or X.Y.Z)"
           exit 1
         fi
   version:update:patch:

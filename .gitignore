@@ -10,8 +10,3 @@
 .envrc
 .env
 .tmp
-build/
-dist/
-*.egg-info/
-*.pyc
-__py

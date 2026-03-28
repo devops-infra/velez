@@ -17,3 +17,4 @@ jobs:
     uses: devops-infra/.github/.github/workflows/reusable-auto-create-pull-request.yml@v1
     with:
       profile: other
+    secrets: inherit

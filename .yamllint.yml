@@ -18,7 +18,7 @@ rules:
   new-lines:
     type: unix
   quoted-strings: disable
-  trailing-spaces: { }
+  trailing-spaces: {}
   truthy:
-    allowed-values: [ 'true', 'false', 'yes', 'no' ]
+    allowed-values: ['true', 'false', 'yes', 'no']
     check-keys: false
