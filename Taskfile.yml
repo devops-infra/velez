@@ -1,0 +1,21 @@
+version: '3'
+
+silent: true
+
+includes:
+  variables: ./Taskfile.variables.yml
+  scripts: ./Taskfile.scripts.yml
+  cicd:
+    taskfile: ./Taskfile.cicd.yml
+    flatten: true
+
+tasks:
+  default:
+    desc: List tasks
+    cmds:
+      - task help
+
+  help:
+    desc: Detailed help
+    cmds:
+      - task: scripts:help
