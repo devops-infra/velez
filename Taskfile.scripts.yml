@@ -107,15 +107,13 @@ tasks:
       - echo "{{.VERSION}}"
 
   version:set:
-    desc: Update .version file
+    desc: Validate version
     cmds:
       - |
         if [ -z "{{.VERSION}}" ]; then
           echo "❌ ERROR: VERSION is empty"
           exit 1
         fi
-      - echo "{{.VERSION}}" > .version
-
   version:update:patch:
     desc: Increment patch version (e.g., 1.2.3 -> 1.2.4)
     cmds:

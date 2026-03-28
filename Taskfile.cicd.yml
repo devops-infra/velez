@@ -90,25 +90,13 @@ tasks:
       - echo "{{.VERSION}}"
 
   version:set:
-    desc: Update version in README.md and action.yml
+    desc: Validate version
     cmds:
       - |
-        # check if VERSION if different than VERSION_FROM_ACTION_YML
-        if [ "{{.VERSION}}" = "{{.VERSION_FROM_ACTION_YML}}" ]; then
-          echo "❌ ERROR: VERSION is same as VERSION_FROM_ACTION_YML ({{.VERSION}})"
+        if [ -z "{{.VERSION}}" ]; then
+          echo "❌ ERROR: VERSION is empty"
           exit 1
         fi
-      - echo Updating full version from {{.VERSION_FROM_ACTION_YML}} to {{.VERSION}}
-      - echo Updating minor version from {{.MINOR_FROM_ACTION_YML}} to {{.VERSION_MINOR}}
-      - echo Updating major version from {{.MAJOR_FROM_ACTION_YML}} to {{.VERSION_MAJOR}}
-      - "{{.SED}} -i 's#{{.DOCKER_NAME}}:{{.VERSION_FROM_ACTION_YML}}#{{.DOCKER_NAME}}:{{.VERSION}}#g' action.yml"
-      - "{{.SED}} -i 's#{{.DOCKER_NAME}}@{{.VERSION_FROM_ACTION_YML}}#{{.DOCKER_NAME}}@{{.VERSION}}#g' README.md"
-      - "{{.SED}} -i 's#{{.GITHUB_NAME}}@{{.VERSION_FROM_ACTION_YML}}#{{.GITHUB_NAME}}@{{.VERSION}}#g' README.md"
-      - "{{.SED}} -i 's#{{.DOCKER_NAME}}@{{.MINOR_FROM_ACTION_YML}}#{{.DOCKER_NAME}}@{{.VERSION_MINOR}}#g' README.md"
-      - "{{.SED}} -i 's#{{.GITHUB_NAME}}@{{.MINOR_FROM_ACTION_YML}}#{{.GITHUB_NAME}}@{{.VERSION_MINOR}}#g' README.md"
-      - "{{.SED}} -i 's#{{.DOCKER_NAME}}@{{.MAJOR_FROM_ACTION_YML}}#{{.DOCKER_NAME}}@{{.VERSION_MAJOR}}#g' README.md"
-      - "{{.SED}} -i 's#{{.GITHUB_NAME}}@{{.MAJOR_FROM_ACTION_YML}}#{{.GITHUB_NAME}}@{{.VERSION_MAJOR}}#g' README.md"
-
   version:update:patch:
     desc: Increment patch version (e.g., 1.2.3 -> 1.2.4)
     cmds:
@@ -141,9 +129,6 @@ tasks:
         }
 
         current="$(task version:get 2>/dev/null || true)"
-        if [ -z "$current" ] && [ -f .version ]; then
-          current="$(tr -d '\n' < .version)"
-        fi
 
         case "$bump_type" in
           set)
@@ -170,7 +155,7 @@ tasks:
             ;;
         esac
 
-        printf "%s" "$next" > .version
+        printf "%s" "$next"
 
   version:tag-release:
     desc: Create set of git tags
@@ -269,11 +254,10 @@ tasks:
       - |
         echo "▶️ Syncing configuration files from devops-infra/.github..."
         curl -sL {{.CONFIGS_BASE_URL}}/.editorconfig -o ./.editorconfig
-        curl -sL {{.CONFIGS_BASE_URL}}/.hadolint.yaml -o ./.hadolint.yaml
         curl -sL {{.CONFIGS_BASE_URL}}/.pre-commit-config.yaml -o ./.pre-commit-config.yaml
         curl -sL {{.CONFIGS_BASE_URL}}/.shellcheckrc -o ./.shellcheckrc
         curl -sL {{.CONFIGS_BASE_URL}}/.yamllint.yml -o ./.yamllint.yml
-        git add .editorconfig .hadolint.yaml .pre-commit-config.yaml .shellcheckrc .yamllint.yml
+        git add .editorconfig .pre-commit-config.yaml .shellcheckrc .yamllint.yml
         echo "✅ Synced configuration files"
 
   sync:ignores:
@@ -282,8 +266,7 @@ tasks:
       - |
         echo "▶️ Syncing ignore files from devops-infra/.github..."
         curl -sL {{.CONFIGS_BASE_URL}}/.gitignore -o ./.gitignore
-        curl -sL {{.CONFIGS_BASE_URL}}/.dockerignore -o ./.dockerignore
-        git add .gitignore .dockerignore
+        git add .gitignore
         echo "✅ Synced ignore files"
 
   sync:taskfiles:
@@ -293,7 +276,7 @@ tasks:
         echo "▶️ Syncing Taskfiles from devops-infra/.github..."
         curl -sL {{.TASKFILES_BASE_URL}}/Taskfile.yml -o ./Taskfile.yml
         curl -sL {{.TASKFILES_BASE_URL}}/Taskfile.cicd.yml -o ./Taskfile.cicd.yml
-        curl -sL {{.TASKFILES_BASE_URL}}/Taskfile.docker.yml -o ./Taskfile.docker.yml
+        curl -sL {{.TASKFILES_BASE_URL}}/Taskfile.scripts.yml -o ./Taskfile.scripts.yml
         curl -sL {{.TASKFILES_BASE_URL}}/Taskfile.variables.yml -o ./Taskfile.variables.yml
         git add Taskfile*.yml
         echo "✅ Synced Taskfiles"

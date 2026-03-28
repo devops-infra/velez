@@ -29,27 +29,20 @@ vars:
       fi
   PROJECT_DIR_NAME:
     sh: basename "$PWD"
-  VERSION_FILE: .version
-  VERSION_FROM_FILE:
-    sh: |
-      if [ ! -f "{{.VERSION_FILE}}" ]; then
-        echo ""
-      else
-        tr -d '\n' < "{{.VERSION_FILE}}"
-      fi
   VERSION_OVERRIDE:
-    sh: echo "__TAKEN_FROM_FILE__"
+    sh: echo "${VERSION_OVERRIDE:-}"
   VERSION:
     sh: |
-      if [ "${VERSION_OVERRIDE}" = "__TAKEN_FROM_FILE__" ]; then
-        from_file="{{.VERSION_FROM_FILE}}"
-        if [ -n "$from_file" ]; then
-          echo "$from_file"
-        else
-          git tag --sort=-v:refname 2>/dev/null | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -1
-        fi
+      override="{{.VERSION_OVERRIDE}}"
+      if [ -n "$override" ]; then
+        echo "$override"
       else
-        echo "${VERSION_OVERRIDE}"
+        latest_tag="$(git tag --sort=-v:refname 2>/dev/null | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -1)"
+        if [ -n "$latest_tag" ]; then
+          echo "$latest_tag"
+        else
+          echo "v0.0.0"
+        fi
       fi
   VERSION_NO_V:
     sh: v="{{.VERSION}}"; echo "${v#v}"
