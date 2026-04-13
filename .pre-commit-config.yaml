@@ -33,9 +33,9 @@ repos:
         name: shellcheck
         entry: bash -lc 'docker run --rm -v "$PWD:/work" -w /work koalaman/shellcheck:stable -x -S style "$@"' --
         language: system
-        files: '\.sh$'
+        files: \.sh$
       - id: yamllint
         name: yamllint
         entry: bash -lc 'docker run --rm -v "$PWD:/work" -w /work cytopia/yamllint -c .yamllint.yml "$@"' --
         language: system
-        files: '\.(yml|yaml)$'
+        files: \.(yml|yaml)$
