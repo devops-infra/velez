@@ -19,7 +19,7 @@ files before committing!
 **This project is in the early development stage and is not ready for production use. It is a work in progress and may
 contain bugs, incomplete features, incorrect documentation, backward incompatible changes or other issues.
 
-Use it at your own risk before it reaches 1.x.x version. Read the documentation carefully and test it in a 
+Use it at your own risk before it reaches 1.x.x version. Read the documentation carefully and test it in a
 safe environment before using it.**
 
 Since it operates on the infrastructure, user is responsible for the consequences of the actions taken by the tool and
@@ -169,7 +169,7 @@ Where:
 For example for the following directory structure:
 
 ```plaintext
-. 
+.
 ├── aws
 │   ├── dev-account
 │   │   └── terragrunt.hcl
@@ -184,7 +184,7 @@ Run the following command to plan the `aws/dev-account` module:
 
 ```sh
 velez -tg plan aws/dev-account
-``` 
+```
 
 ## Configuration
 
