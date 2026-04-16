@@ -105,6 +105,7 @@ tasks:
           echo "❌ ERROR: VERSION '{{.VERSION}}' is not a valid semantic version (expected vX.Y.Z or X.Y.Z)"
           exit 1
         fi
+
   version:update:patch:
     desc: Increment patch version (e.g., 1.2.3 -> 1.2.4)
     cmds:
