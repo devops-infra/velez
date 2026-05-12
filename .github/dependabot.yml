@@ -1,7 +1,5 @@
 version: 2
 updates:
-
-  # Maintain dependencies for GitHub Actions
   - package-ecosystem: github-actions
     directory: "/"
     target-branch: master
@@ -9,8 +7,11 @@ updates:
       interval: weekly
     assignees:
       - ChristophShyper
+    groups:
+      gha-all:
+        patterns:
+          - "*"
 
-  # Enable version updates for pip
   - package-ecosystem: pip
     directory: "/"
     target-branch: master
@@ -18,3 +19,15 @@ updates:
       interval: weekly
     assignees:
       - ChristophShyper
+    groups:
+      pip-patch-minor:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+      pip-major:
+        patterns:
+          - "*"
+        update-types:
+          - major
