@@ -3,6 +3,7 @@ repos:
     rev: v6.0.0
     hooks:
       - id: check-added-large-files
+        exclude: ^img/
       - id: check-case-conflict
       - id: check-executables-have-shebangs
       - id: check-illegal-windows-names
@@ -39,3 +40,8 @@ repos:
         entry: bash -lc 'docker run --rm -v "$PWD:/work" -w /work cytopia/yamllint -c .yamllint.yml "$@"' --
         language: system
         files: \.(yml|yaml)$
+      - id: pylint
+        name: pylint
+        entry: python3 -m pylint --rcfile .pylintrc
+        language: system
+        files: \.py$

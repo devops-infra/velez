@@ -25,7 +25,7 @@ safe environment before using it.**
 Since it operates on the infrastructure, user is responsible for the consequences of the actions taken by the tool and
 should review the code before using it.
 
-![Velez](img/velez.jpg)
+![Velez](img/velez.png)
 
 
 ## Advantages

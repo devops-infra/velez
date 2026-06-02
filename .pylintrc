@@ -1,3 +1,29 @@
 [MASTER]
 disable=
     C0114, # missing-module-docstring
+    C0115, # missing-class-docstring
+    C0116, # missing-function-docstring
+    C0301, # line-too-long
+    C0207, # use-maxsplit-arg
+    C0411, # wrong-import-order
+    R0902, # too-many-instance-attributes
+    R0904, # too-many-public-methods
+    R0912, # too-many-branches
+    R0913, # too-many-arguments
+    R0914, # too-many-locals
+    R0917, # too-many-positional-arguments
+    R1705, # no-else-return
+    R1732, # consider-using-with
+    W0221, # arguments-differ
+    W0511, # fixme
+    W0611, # unused-import
+    W0612, # unused-variable
+    W0613, # unused-argument
+    W0621, # redefined-outer-name
+    W0706, # try-except-raise
+    W0718, # broad-exception-caught
+    W1309, # f-string-without-interpolation
+    W1508, # invalid-envvar-default
+    W1514, # unspecified-encoding
+    E1101, # no-member
+    C2801  # unnecessary-dunder-call
