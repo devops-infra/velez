@@ -21,6 +21,7 @@ tasks:
       - task: lint:actionlint
       - task: lint:shellcheck
       - task: lint:yamllint
+      - task: lint:pylint
 
   lint:actionlint:
     desc: Lint GitHub Actions workflows with actionlint
@@ -36,6 +37,11 @@ tasks:
     desc: Lint YAML files with yamllint
     cmds:
       - task: scripts:lint:yamllint
+
+  lint:pylint:
+    desc: Lint Python files with pylint
+    cmds:
+      - task: scripts:lint:pylint
 
   dependency:update:
     desc: 'No-op: no dedicated dependency updater configured for this profile'

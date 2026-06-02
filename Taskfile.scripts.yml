@@ -90,6 +90,20 @@ tasks:
           exit $rc
         fi
 
+  lint:pylint:
+    desc: Lint Python files with pylint
+    cmds:
+      - |
+        set -eu
+        echo "▶️ Running pylint..."
+        files="$(git ls-files '*.py' || true)"
+        if [ -z "${files}" ]; then
+          echo "ℹ️ No Python files found, skipping pylint"
+          exit 0
+        fi
+        python3 -m pylint --rcfile .pylintrc ${files}
+        echo "✅ pylint passed"
+
   dependency:update:
     desc: 'No-op: no dedicated dependency updater configured for this profile'
     cmds:
@@ -102,7 +116,7 @@ tasks:
     desc: Get pull request template
     cmds:
       - mkdir -p .tmp
-      - curl -LsS https://raw.githubusercontent.com/devops-infra/.github/master/PULL_REQUEST_TEMPLATE.md -o .tmp/PULL_REQUEST_TEMPLATE.md
+      - curl -LsS https://raw.githubusercontent.com/devops-infra/.github/refs/tags/v1/PULL_REQUEST_TEMPLATE.md -o .tmp/PULL_REQUEST_TEMPLATE.md
 
   git:set-config:
     desc: Set git user config
