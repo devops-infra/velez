@@ -1,8 +1,8 @@
 pick==2.6.0
 setuptools==82.0.1
-boto3==1.43.24
+boto3==1.43.29
 python-hcl2==8.1.2
 PyGithub==2.9.1
-pytest==9.0.3
+pytest==9.1.0
 build==1.5.0
-pylint==4.0.5
+pylint==4.0.6
